@@ -24,11 +24,15 @@ namespace WorkoutPlanner.Context
             if (!_context.Users.Any())
             {
 
-
                 await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
                 await _roleManager.CreateAsync(new IdentityRole("Client"));
 
-                 
+
+
+
+
             }
 
+        }
     }
+}
