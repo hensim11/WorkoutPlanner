@@ -4,13 +4,8 @@ namespace WorkoutPlanner.Model
 {
     public class User : IdentityUser
     {
-        // Primary key for the User table
         public int Id { get; set; }
 
-        // Foreign key, relates to PersonalTrainer (PtID in the diagram)
-     
-
-        // User's personal information
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
