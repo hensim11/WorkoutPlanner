@@ -15,7 +15,7 @@ namespace WorkoutPlanner.Model
         public string LastName { get; set; }
 
         // User's fitness information
-        public string FitnessLevel { get; set; }
+        
         public string Goal { get; set; }
         public decimal Weight { get; set; }
         public string Gender { get; set; }

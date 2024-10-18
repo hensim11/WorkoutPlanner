@@ -23,34 +23,24 @@ namespace WorkoutPlanner.Context
 
             if (!_context.Users.Any())
             {
-                // Create roles for PersonalTrainer and Client
-                await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
-                await _roleManager.CreateAsync(new IdentityRole("Client"));
 
-                // Create PersonalTrainer user
-                var trainerEmail = "trainer@fitness.com";
-                var trainerPassword = "Trainer123!";
-                var personalTrainer = new User
-                {
-                    Email = trainerEmail,
-                    FirstName = "John",
-                    LastName = "Doe",
-                    Password = trainerPassword,
-                };
-                await _userManager.CreateAsync(personalTrainer, trainerPassword);
-                await _userManager.AddToRoleAsync(personalTrainer, "PersonalTrainer");
 
-                // Create Client user
-                var clientEmail = "client@fitness.com";
-                var clientPassword = "Client123!";
-                var client = new User
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                await _roleManager.CreateAsync(new IdentityRole("Customer"));
+
+                var adminEmail = "admin@cheese.com";
+                var adminPassword = "Cheese123!";
+
+                var admin = new User
                 {
-                    Email = clientEmail,
-                    FirstName = "Jane",
-                    LastName = "Smith",
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    FirstName = "Admin",
+                    LastName = "User",
+
                 };
-                await _userManager.CreateAsync(client, clientPassword);
-                await _userManager.AddToRoleAsync(client, "Client");
+
+             
             }
         }
     }
