@@ -35,7 +35,6 @@ namespace WorkoutPlanner.Context
                     Email = trainerEmail,
                     FirstName = "John",
                     LastName = "Doe",
-                    Password = trainerPassword,
                 };
                 await _userManager.CreateAsync(personalTrainer, trainerPassword);
                 await _userManager.AddToRoleAsync(personalTrainer, "PersonalTrainer");
