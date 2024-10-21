@@ -35,26 +35,61 @@ builder.Services.AddIdentityCore<User>()
 
 builder.Services.AddScoped<DatabaseSeeder>();
 var app = builder.Build();
-using var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetService<DatabaseSeeder>();
-await seeder! .Seed();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+using var scope = app.Services.CreateScope();
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var roles = new[] { "Admin", "Personal Trainer", "Client" };
+
+    foreach (var role in roles)
+    {
+
+        if (!!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
 }
 
-app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-app.UseAntiforgery();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    string email = "admin@admin.com";
+    string password = "Password1234!";
 
-app.MapAdditionalAccountRoutes();
+    if(await userManager.FindByEmailAsync(email) == null)
+    {
 
-app.Run();
+        var user = new IdentityUser();
+        user.UserName = email;
+        user.Email = email;
+
+        await userManager.CreateAsync(user, password);
+
+        userManager.AddToRoleAsync(user, "Admin");
+    }
+
+
+
+var seeder = scope.ServiceProvider.GetService<DatabaseSeeder>();
+    await seeder!.Seed();
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseStaticFiles();
+    app.UseAntiforgery();
+
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode();
+
+    app.MapAdditionalAccountRoutes();
+
+    app.Run();
+

@@ -33,10 +33,10 @@ namespace WorkoutPlanner.Context
 
                 var admin = new User
                 {
-                    Email = trainerEmail,
+                    Email = adminEmail,
                     FirstName = "John",
                     LastName = "Doe",
-                    Password = trainerPassword,
+                     
                 };
 
              
