@@ -70,6 +70,7 @@ using var scope = app.Services.CreateScope();
 
 
 
+
 var seeder = scope.ServiceProvider.GetService<DatabaseSeeder>();
     await seeder!.Seed();
 

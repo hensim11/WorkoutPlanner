@@ -11,6 +11,7 @@
 
         public string ExerciseName { get; set; }
         public string ExerciseInfo { get; set; }
+        public string? ImageUrl { get; set; }
 
         public ICollection<WorkoutLog> WorkoutLogs { get; set; }
 
