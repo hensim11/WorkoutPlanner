@@ -15,6 +15,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<WorkoutProvider>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -40,34 +41,7 @@ using var scope = app.Services.CreateScope();
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var roles = new[] { "Admin", "Personal Trainer", "Client" };
-
-    foreach (var role in roles)
-    {
-
-        if (!!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
-    }
 }
-
-
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    string email = "admin@admin.com";
-    string password = "Password1234!";
-
-    if(await userManager.FindByEmailAsync(email) == null)
-    {
-
-        var user = new IdentityUser();
-        user.UserName = email;
-        user.Email = email;
-
-        await userManager.CreateAsync(user, password);
-
-        userManager.AddToRoleAsync(user, "Admin");
-    }
-
 
 
 

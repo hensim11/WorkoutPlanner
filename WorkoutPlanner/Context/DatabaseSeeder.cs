@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WorkoutPlanner.Model;
+
 
 namespace WorkoutPlanner.Context
 {
@@ -26,6 +28,9 @@ namespace WorkoutPlanner.Context
                 var cheeses = GetWorkouts();
                 _context.Workouts.AddRange(cheeses);
                 await _context.SaveChangesAsync();
+
+
+
             }
         
 
