@@ -23,6 +23,25 @@ namespace WorkoutPlanner.Context
         {
             await _context.Database.MigrateAsync();
 
+            if (!_context.Users.Any()
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
+
+                var adminEmail = "admin@workout.com";
+                var adminPassword = "Workout123!";
+
+                var admin = new User
+                {
+                    Email = adminEmail,
+                    FirstName = "Admin",
+                    LastName = "User",
+                };
+                
+                await _userManager.CreateAsync(admin, adminPassword);
+                await _userManager.AddToRoleAsync(admin, "Admin");
+            }
+
             if (!_context.Workouts.Any())
             {
                 var cheeses = GetWorkouts();
