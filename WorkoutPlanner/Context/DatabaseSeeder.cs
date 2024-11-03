@@ -51,10 +51,10 @@ namespace WorkoutPlanner.Context
 
 
             }
-        
 
-        private List<Workout> GetWorkouts()
-        {
+
+            private List<Workout> GetWorkouts()
+            {
                 return
                 [
                     new Workout { ExerciseName = "Push-Up" },
@@ -84,6 +84,7 @@ namespace WorkoutPlanner.Context
                     new Workout { ExerciseName = "Hammer Curl" }
                 ];
             }
+
 
 
         }
