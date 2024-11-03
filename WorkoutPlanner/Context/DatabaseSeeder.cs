@@ -37,7 +37,7 @@ namespace WorkoutPlanner.Context
                     FirstName = "Admin",
                     LastName = "User",
                 };
-                
+
                 await _userManager.CreateAsync(admin, adminPassword);
                 await _userManager.AddToRoleAsync(admin, "Admin");
             }
@@ -51,9 +51,10 @@ namespace WorkoutPlanner.Context
 
 
             }
+        }
 
 
-            private List<Workout> GetWorkouts()
+        private List<Workout> GetWorkouts()
             {
                 return
                 [
@@ -87,6 +88,6 @@ namespace WorkoutPlanner.Context
 
 
 
-        }
+        
     }
 }

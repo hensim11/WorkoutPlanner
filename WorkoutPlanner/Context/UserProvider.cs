@@ -6,7 +6,7 @@ namespace WorkoutPlanner.Context
     {
         private User user;
 
-        private readonly DatabaseContext context;
+        private readonly DatabaseContext _context;
         
         public UserProvider(DatabaseContext context)
         {
@@ -15,7 +15,7 @@ namespace WorkoutPlanner.Context
 
         public User? GetUserByName(string? name)
         {
-            return _context.Users.FirstOrDefault(x => user.Name == name);
+            return _context.Users.FirstOrDefault(x => user.FirstName == name);
         }
     }
 }

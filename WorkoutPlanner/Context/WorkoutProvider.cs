@@ -22,6 +22,5 @@ namespace WorkoutPlanner.Context
             {
                 return _context.Workouts.Find(id);
             }
-        
     }
 }
