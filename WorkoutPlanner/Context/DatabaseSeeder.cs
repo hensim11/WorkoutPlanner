@@ -23,7 +23,7 @@ namespace WorkoutPlanner.Context
         {
             await _context.Database.MigrateAsync();
 
-            if (!_context.Users.Any()
+            if (!_context.Users.Any())
             {
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
                 await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
@@ -44,8 +44,8 @@ namespace WorkoutPlanner.Context
 
             if (!_context.Workouts.Any())
             {
-                var cheeses = GetWorkouts();
-                _context.Workouts.AddRange(cheeses);
+                var workouts = GetWorkouts();
+                _context.Workouts.AddRange(workouts);
                 await _context.SaveChangesAsync();
 
 
