@@ -13,8 +13,6 @@
         public string ExerciseInfo { get; set; }
         public string? ImageUrl { get; set; }
 
-        public ICollection<WorkoutLog> WorkoutLogs { get; set; }
-
-        public ICollection<Favourite> Favourites { get; set; }
+      
     }
 }
