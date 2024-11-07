@@ -42,12 +42,6 @@ namespace WorkoutPlanner.Context
                 await _userManager.AddToRoleAsync(admin, "Admin");
             }
 
-            if (!_context.Workouts.Any())
-            {
-                var workouts = GetWorkouts();
-                _context.Workouts.AddRange(workouts);
-                await _context.SaveChangesAsync();
-            }
         }
 
 

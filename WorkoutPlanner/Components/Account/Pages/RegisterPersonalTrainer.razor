@@ -1,0 +1,120 @@
+﻿@page "/Account/Register/PersonalTrainer"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using WorkoutPlanner.Components.Account.Shared
+@using WorkoutPlanner.Model
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject UserManager<User> UserManager
+@inject IUserStore<User> UserStore
+@inject SignInManager<User> SignInManager
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register</PageTitle>
+<StatusMessage Message="@statusMessage" IsError="@isError" />
+
+.0
+<div class="card">
+    <div class="card-body bg-light">
+        <h4 class="card-title">Register</h4>
+
+        <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label for="name" class="form-label">FirstName</label>
+                    <InputText class="form-control" placeholder="FirstName" @bind-Value="Model.FirstName" />
+                </div>
+                <div class="col-md-12">
+                    <label for="name" class="form-label">LastName</label>
+                    <InputText class="form-control" placeholder="LastName" @bind-Value="Model.LastName" />
+                </div>
+                <div class="col-md-12">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText class="form-control" placeholder="Email" @bind-Value="Model.Email" />
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Password</label>
+                    <InputText type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Confirm Password</label>
+                    <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                </div>
+                <div>
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @bind-value="role">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Personal Trainer
+                </label>
+                </div>
+                <div>
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @bind-value="role">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                        Client
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<IdentityError>? identityErrors;
+
+    [SupplyParameterFromForm]
+    private RegisterModel Model { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
+    private bool isError;
+
+    private string role;
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        var user = new User
+            {
+                Email = Model.Email,
+                FirstName = Model.FirstName,
+                LastName = Model.LastName,
+            };
+            var result = await UserManager.CreateAsync(user, Model.Password);
+            await UserManager.AddToRoleAsync(user, "{role}");
+
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            isError = true;
+            return;
+        }
+
+        Logger.LogInformation("User created a new account with password.");
+
+        var userId = await UserManager.GetUserIdAsync(user);
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
+    }
+
+    private sealed class RegisterModel
+    {
+        public string FirstName { get; set; } = "";
+
+        public string LastName { get; set; } = "";
+
+        public string Email { get; set; } = "";
+
+        public string Password { get; set; } = "";
+
+        public string ConfirmPassword { get; set; } = "";
+    }
+}

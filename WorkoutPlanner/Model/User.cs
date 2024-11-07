@@ -4,7 +4,6 @@ namespace WorkoutPlanner.Model
 {
     public class User : IdentityUser
     {
-        public int Id { get; set; }
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -16,8 +15,8 @@ namespace WorkoutPlanner.Model
         public string Gender { get; set; }
         public int Age { get; set; }
         public decimal Height { get; set; }
-        public int DaysAvailable { get; set; }  // Number of days per week the user is available for training
-        public int WorkoutLength { get; set; }  // Length of the workout in minutes
+        public int DaysAvailable { get; set; }  
+        public int WorkoutLength { get; set; }  
 
         // Navigation property to the related PersonalTrainer
         public PersonalTrainer PersonalTrainer { get; set; }
