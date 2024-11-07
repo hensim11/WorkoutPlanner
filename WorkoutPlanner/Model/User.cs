@@ -16,7 +16,7 @@ namespace WorkoutPlanner.Model
         public int Age { get; set; }
         public decimal Height { get; set; }
         public int DaysAvailable { get; set; }  
-        public int WorkoutLength { get; set; }  
+        public TimeSpan WorkoutLength { get; set; }  
 
         // Navigation property to the related PersonalTrainer
         public PersonalTrainer PersonalTrainer { get; set; }

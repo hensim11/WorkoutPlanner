@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
+@using WorkoutPlanner.Components.Pages
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -27,20 +28,21 @@
     </div>
 </nav>
 
-<!-- Buttons section -->
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f0f4f8;">
     <AuthorizeView>
         <NotAuthorized>
             <div class="text-center">
-                <a href="/Account/Login" class="btn btn-primary btn-lg m-2">Login</a>
-                <a href="/Account/Register" class="btn btn-secondary btn-lg m-2">Register</a>
+                <h2 class="mb-4" style="color: #333;">Welcome to Your Workout Planner</h2>
+                <p class="mb-4" style="color: #555;">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
+                <a href="/Account/Login" class="btn btn-outline-primary btn-lg m-2" style="border-radius: 25px; padding: 10px 20px; font-weight: bold;">Login</a>
+                <a href="/Account/Register" class="btn btn-outline-secondary btn-lg m-2" style="border-radius: 25px; padding: 10px 20px; font-weight: bold;">Register</a>
             </div>
         </NotAuthorized>
     </AuthorizeView>
 </div>
 
 <main class="container">
-    <div class="p-2 rounded">
+    <div class="p-4 rounded" style="background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
         @Body
     </div>
 </main>
