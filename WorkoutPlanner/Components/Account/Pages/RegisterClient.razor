@@ -18,11 +18,12 @@
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
 
-
+<!--here there is the information needed for the client to register themselves-->
 <div class="card">
     <div class="card-body bg-light">
         <h4 class="card-title">Register</h4>
 
+        
         <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
             <div class="row g-3">
                 <div class="col-md-12">
@@ -47,8 +48,34 @@
                 </div>
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown button
+                        Fitness Level: @Model.FitnessLevel
                     </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" @onclick="() => Model.FitnessLevel = 'Beginner'">Beginner</a></li>
+                        <li><a class="dropdown-item" href="#" @onclick="() => Model.FitnessLevel = 'Intermediate'">Intermediate</a></li>
+                        <li><a class="dropdown-item" href="#" @onclick="() => Model.FitnessLevel = 'Advanced'">Advanced</a></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Goal: @Model.Goal
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" @onclick="() => Model.Goal = 'Muscle Gain'">Muscle Gain</a></li>
+                        <li><a class="dropdown-item" href="#" @onclick="() => Model.Goal = 'Fat Loss'">Fat Loss</a></li>
+                    </ul>
+                </div>
+
+
+                <div class="col-md-12">
+                    <label for="name" class="form-label">Weight</label>
+                    <InputNumber class="form-control" placeholder="Weight" @bind-Value="Model.Weight" />
+                </div>
+
+                <div class="col-md-12">
+                    <label for="name" class="form-label">LastName</label>
+                    <InputText class="form-control" placeholder="LastName" @bind-Value="Model.LastName" />
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">Register</button>
@@ -72,56 +99,83 @@
 
     private string role;
 
-    public async Task RegisterUser(EditContext editContext)
+    // Place this at the top of your file
+
+
+public async Task RegisterUser(EditContext editContext)
     {
-        var user = new User
-            {
-                Email = Model.Email,
-                FirstName = Model.FirstName,
-                LastName = Model.LastName,
-            };
-        var result = await UserManager.CreateAsync(user, Model.Password);
-        await UserManager.AddToRoleAsync(user, "Client");
-
-        if (!result.Succeeded)
+    var user = new User
         {
-            identityErrors = result.Errors;
-            isError = true;
-            return;
-        }
+            Email = Model.Email,
+            FirstName = Model.FirstName,
+            LastName = Model.LastName,
+        };
+    var result = await UserManager.CreateAsync(user, Model.Password);
+    await UserManager.AddToRoleAsync(user, "Client");
 
-        Logger.LogInformation("User created a new account with password.");
+    if (!result.Succeeded)
+    {
+        identityErrors = result.Errors;
+        isError = true;
+        return;
+    }
 
-        var userId = await UserManager.GetUserIdAsync(user);
+    Logger.LogInformation("User created a new account with password.");
 
-        await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo(ReturnUrl);
+    var userId = await UserManager.GetUserIdAsync(user);
+
+    await SignInManager.SignInAsync(user, isPersistent: false);
+    RedirectManager.RedirectTo(ReturnUrl);
     }
 
     private sealed class RegisterModel
     {
+        [Required(ErrorMessage = "Enter your first name")]
         public string FirstName { get; set; } = "";
 
+        [Required(ErrorMessage = "Enter your last name")]
         public string LastName { get; set; } = "";
 
+        [Required(ErrorMessage = "Enter your email")]
+        [EmailAddress(ErrorMessage = "Enter a valid email address")]
         public string Email { get; set; } = "";
 
+        [Required(ErrorMessage = "Enter your password")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         public string Password { get; set; } = "";
 
+        [Required(ErrorMessage = "Confirm your password")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = "";
 
+        [Required(ErrorMessage = "Select your goal")]
         public string Goal { get; set; } = "";
 
+        [Required(ErrorMessage = "Select your fitness level")]
+        public string FitnessLevel { get; set; } = "";
+
+        [Required(ErrorMessage = "Enter your weight")]
+        [Range(1, 500, ErrorMessage = "Enter a valid weight")]
         public double Weight { get; set; } = 0.00;
 
+        [Required(ErrorMessage = "Enter your gender")]
         public string Gender { get; set; } = "";
 
+        [Required(ErrorMessage = "Enter your age")]
+        [Range(1, 120, ErrorMessage = "Enter a valid age")]
         public int Age { get; set; } = 0;
 
+        [Required(ErrorMessage = "Enter your height")]
+        [Range(1, 300, ErrorMessage = "Enter a valid height")]
         public double Height { get; set; } = 0.00;
 
+        [Required(ErrorMessage = "Enter your days available")]
+        [Range(1, 7, ErrorMessage = "Enter a valid number of days")]
         public int DaysAvailable { get; set; } = 0;
 
+        [Required(ErrorMessage = "Enter your workout length")]
+        [Range(10, 300, ErrorMessage = "Enter a valid workout length in minutes")]
         public int WorkoutLength { get; set; } = 0;
     }
+}
 }
