@@ -1,8 +1,32 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 
 
 
 <PageTitle>Home</PageTitle>
 
+            <div class="text-center">
+                <h2 class="mb-4" style="color: #333;">Welcome to Your Workout Planner</h2>
+                <p class="mb-4" style="color: #555;">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
+                <a href="/Account/Login" class="btn btn-outline-primary btn-lg m-2" style="border-radius: 25px; padding: 10px 20px; font-weight: bold;">Login</a>
+                <a href="/Account/Register" class="btn btn-outline-secondary btn-lg m-2" style="border-radius: 25px; padding: 10px 20px; font-weight: bold;">Register</a>
+            </div>
 
+<div class="d-grid gap-2 d-md-block">
+    <button class="btn btn-primary" type="button" @onclick="GoToLogin">Log in</button>
+    <button class="btn btn-primary" type="button" @onclick="GoToRegister">Register</button>
+</div>
+     
+   
 
+@code {
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/Login");
+    }
+
+    private void GoToRegister()
+    {
+        NavigationManager.NavigateTo("/Register");
+    }
+}
