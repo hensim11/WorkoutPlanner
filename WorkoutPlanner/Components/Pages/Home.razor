@@ -1,6 +1,52 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
-
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 
 
 <PageTitle>Home</PageTitle>
+
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f0f4f8;">
+    <AuthorizeView>
+        <NotAuthorized>
+            <div class="text-center">
+                <h2 class="mb-4" style="color: #333;">Welcome to Your Workout Planner</h2>
+                <p class="mb-4" style="color: #555;">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
+                <div class="d-grid gap-2 d-md-block">
+                    <NavLink class="btn btn-primary" type="button" @onclick="GoToLogin">Log in</NavLink>
+                    <button class="btn btn-primary" type="button" @onclick="GoToRegister">Register</button>
+                    <div class="d-flex justify-content-end mt-2 mt-md-0">
+                        <a @onclick="GoToPlan" class="btn btn-outline-primary"></a>
+                    </div>
+                </div>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+<main class="container">
+    <div class="p-4 rounded" style="background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        @Body
+    </div>
+</main>
+
+@code{
+
+    private void GoToPlan()
+    {
+        NavigationManager.NavigateTo("/plan");
+    }
+
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/Login");
+    }
+
+    private void GoToRegister()
+    {
+        NavigationManager.NavigateTo("Account/Register");
+    }
+}
+
+

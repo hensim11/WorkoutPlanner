@@ -189,6 +189,8 @@
         var userId = await UserManager.GetUserIdAsync(user);
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
+
+
     }
 
     
