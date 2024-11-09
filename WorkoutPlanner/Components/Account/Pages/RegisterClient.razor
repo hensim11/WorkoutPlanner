@@ -1,12 +1,16 @@
-﻿@page "/Account/Register/Client"
+﻿@page "/Account/RegisterClient"
 
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Authorization
+
 @using WorkoutPlanner.Components.Account.Shared
 @using WorkoutPlanner.Model
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@attribute [Authorize]
+
 
 @inject UserManager<User> UserManager
 @inject IUserStore<User> UserStore
@@ -27,11 +31,11 @@
         <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
             <div class="row g-3">
                 <div class="col-md-12">
-                    <label for="name" class="form-label">FirstName</label>
+                    <label for="name" class="form-label">First Name</label>
                     <InputText class="form-control" placeholder="FirstName" @bind-Value="Model.FirstName" />
                 </div>
                 <div class="col-md-12">
-                    <label for="name" class="form-label">LastName</label>
+                    <label for="name" class="form-label">Surname</label>
                     <InputText class="form-control" placeholder="LastName" @bind-Value="Model.LastName" />
                 </div>
                 <div class="col-md-12">
@@ -50,13 +54,13 @@
                 
                 <h4>What is your Goal?</h4>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio1" @bind="Model.Goal">
+                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio1"  @bind="Model.Goal">
                     <label class="form-check-label" for="goalRadio1">
                         Muscle Gain
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio2" @bind="Model.Goal">
+                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio2"  @bind="Model.Goal">
                     <label class="form-check-label" for="goalRadio2">
                         Fat Loss
                     </label>
@@ -65,7 +69,7 @@
                 
                 <h4>What is your Fitness Level?</h4>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="fitnessLevelRadio" id="fitnessLevelRadio1" @bind="Model.FitnessLevel">
+                    <input class="form-check-input" type="radio" name="fitnessLevelRadio" id="fitnessLevelRadio1"  @bind="Model.FitnessLevel">
                     <label class="form-check-label" for="fitnessLevelRadio1">
                         Beginner
                     </label>
@@ -143,9 +147,9 @@
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
 
-    private string role;
+    
 
-   
+
 
 
     public async Task RegisterUser(EditContext editContext)
@@ -153,10 +157,20 @@
         var user = new User
         {
             Email = Model.Email,
+            UserName = Model.Email,
             FirstName = Model.FirstName,
             LastName = Model.LastName,
-
+            Goal = Model.Goal,
+            FitnessLevel = Model.FitnessLevel,
+            Weight = Model.Weight,
+            Gender = Model.Gender,
+            Age = Model.Age,
+            Height = Model.Height,
+            DaysAvailable = Model.DaysAvailable,
+            WorkoutLength = Model.WorkoutLength,
         };
+
+
         var result = await UserManager.CreateAsync(user, Model.Password);
         await UserManager.AddToRoleAsync(user, "Client");
 
@@ -167,13 +181,17 @@
             return;
         }
 
+
+
+
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
-
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
     }
+
+    
 
 
     //validation for inputs required for registration

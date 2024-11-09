@@ -11,7 +11,7 @@ using WorkoutPlanner.Context;
 namespace WorkoutPlanner.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241107135733_InitialCreate")]
+    [Migration("20241109172306_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -232,6 +232,10 @@ namespace WorkoutPlanner.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FitnessLevel")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -240,8 +244,8 @@ namespace WorkoutPlanner.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -283,11 +287,11 @@ namespace WorkoutPlanner.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
 
-                    b.Property<int>("WorkoutLength")
-                        .HasColumnType("INTEGER");
+                    b.Property<TimeSpan>("WorkoutLength")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WorkoutPlanner.Model;
+using WorkoutPlanner.Components;
+
 
 
 namespace WorkoutPlanner.Context
@@ -25,24 +27,19 @@ namespace WorkoutPlanner.Context
 
             if (!_context.Users.Any())
             {
-                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                await _roleManager.CreateAsync(new IdentityRole("Client"));
                 await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
 
-                var adminEmail = "admin@workout.com";
-                var adminPassword = "Workout123!";
 
-                var admin = new User
-                {
-                    Email = adminEmail,
-                    FirstName = "Admin",
-                    LastName = "User",
-                };
 
-                await _userManager.CreateAsync(admin, adminPassword);
-                await _userManager.AddToRoleAsync(admin, "Admin");
             }
 
+
+
+
+
         }
+
 
 
         private List<Workout> GetWorkouts()

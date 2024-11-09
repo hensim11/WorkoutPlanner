@@ -18,11 +18,10 @@
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
 
+<!--This is where the user says they are a personal trainer or client-->
 <div class="card">
     <div class="card-body bg-light">
-        <h4 class="card-title">Register</h4>
-
-        <!-- Use EditContext for validation and state management -->
+        <h4 class="card-title">Personal trainer or client?</h4>
         <EditForm EditContext="editContext" OnValidSubmit="RegisterUser" FormName="registerForm">
             <div class="row g-3">
                 <div>
@@ -59,18 +58,18 @@
 
     protected override void OnInitialized()
     {
-        editContext = new EditContext(Model); // Initialize EditContext with Model
+        editContext = new EditContext(Model); 
     }
 
     private async Task RegisterUser()
     {
         if (role == "Personal Trainer")
         {
-            NavigationManager.NavigateTo($"/Account/Register/PersonalTrainer");
+            NavigationManager.NavigateTo("Account/RegisterPersonalTrainer");
         }
         else
         {
-            NavigationManager.NavigateTo($"/Account/Register/Client");
+            NavigationManager.NavigateTo("Account/RegisterClient");
         }
     }
 
