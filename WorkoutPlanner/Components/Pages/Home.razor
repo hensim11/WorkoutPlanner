@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
+<link rel="stylesheet" href="Home.css">
 
 <PageTitle>Home</PageTitle>
 
@@ -16,9 +17,7 @@
                 <div class="d-grid gap-2 d-md-block">
                     <NavLink class="btn btn-primary" type="button" @onclick="GoToLogin">Log in</NavLink>
                     <button class="btn btn-primary" type="button" @onclick="GoToRegister">Register</button>
-                    <div class="d-flex justify-content-end mt-2 mt-md-0">
-                        <a @onclick="GoToPlan" class="btn btn-outline-primary"></a>
-                    </div>
+                   
                 </div>
             </div>
         </NotAuthorized>

@@ -3,21 +3,23 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
-@using Microsoft.AspNetCore.Authorization
-
+@using WorkoutPlanner.Context
 @using WorkoutPlanner.Components.Account.Shared
 @using WorkoutPlanner.Model
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@attribute [Authorize]
 
 
 @inject UserManager<User> UserManager
+@inject RoleManager<IdentityRole> RoleManager
 @inject IUserStore<User> UserStore
 @inject SignInManager<User> SignInManager
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+
+
+
 
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
@@ -26,6 +28,7 @@
 <div class="card">
     <div class="card-body bg-light">
         <h4 class="card-title">Register</h4>
+
 
         
         <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
@@ -170,16 +173,22 @@
             WorkoutLength = Model.WorkoutLength,
         };
 
+        var roleExists = await RoleManager.RoleExistsAsync("Client");
+        if (!roleExists)
+        {
+            await RoleManager.CreateAsync(new IdentityRole("Client"));
+        }
 
         var result = await UserManager.CreateAsync(user, Model.Password);
-        await UserManager.AddToRoleAsync(user, "Client");
-
         if (!result.Succeeded)
         {
             identityErrors = result.Errors;
             isError = true;
             return;
         }
+
+        await UserManager.AddToRoleAsync(user, "Client");
+
 
 
 
@@ -189,6 +198,8 @@
         var userId = await UserManager.GetUserIdAsync(user);
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
+
+      
 
 
     }
@@ -243,7 +254,7 @@
         public int DaysAvailable { get; set; } = 0;
 
         [Required(ErrorMessage = "Enter your workout length")]
-        [Range(10, 300, ErrorMessage = "Enter a valid workout length in minutes")]
+        [Range(10, 300, ErrorMessage = "Enter a valid workout length in hours:minutes")]
         public TimeSpan WorkoutLength { get; set; } = TimeSpan.Zero;
     }
 }
