@@ -25,84 +25,124 @@
 <StatusMessage Message="@statusMessage" IsError="@isError" />
 
 <!--here there is the information needed for the client to register themselves-->
-<div class="card">
-    <div class="card-body bg-light">
-        <h4 class="card-title">Register</h4>
+<div class="card" style="background-color: #b0c4c9; color: #2c3e50; border-color: #6a8fa0;">
+    <div class="card-body" style="background-color: #b0c4c9; color: #2c3e50;">
+        <h4 class="card-title" style="color: #6a8fa0;">Register</h4>
 
-   
-        
         <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
-              <!--allows for validation checks to occur-->
+            <DataAnnotationsValidator /> <!--allows for validation checks to occur-->
             <div class="row g-3">
-                <div class="col-md-12">
-                    <label for="name" class="form-label">First Name</label>
-                    <InputText class="form-control" placeholder="FirstName" @bind-Value="Model.FirstName" />
-                  
-                </div>
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Surname</label>
-                    <InputText class="form-control" placeholder="LastName" @bind-Value="Model.LastName" />
-                </div>
-                <div class="col-md-12">
-                    <label for="email" class="form-label">Email</label>
-                    <InputText class="form-control" placeholder="Email" @bind-Value="Model.Email" />
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">First Name</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="FirstName" @bind-Value="Model.FirstName" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.FirstName)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="password" class="form-label">Password</label>
-                    <InputText type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
+                    <label for="name" class="form-label" style="color: #2c3e50;">Surname</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="LastName" @bind-Value="Model.LastName" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.LastName)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="name" class="form-label">Confirm Password</label>
-                    <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                    <label for="name" class="form-label" style="color: #2c3e50;">Goal (Muscle gain or Weight loss)</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Goal" @bind-Value="Model.Goal" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Goal)" />
+                    </div>
                 </div>
-
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Fitness Level (Beginner, Intermedite, Advanced)</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="FitnessLevel" @bind-Value="Model.FitnessLevel" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.FitnessLevel)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Weight in kg</label>
+                    <InputNumber class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Weight" @bind-Value="Model.Weight" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Weight)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Gender</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Gender" @bind-Value="Model.Gender" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Gender)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Age</label>
+                    <InputNumber class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Age" @bind-Value="Model.Age" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Age)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Height in cm</label>
+                    <InputNumber class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Height" @bind-Value="Model.Height" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Height)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Days Available</label>
+                    <InputNumber class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="DaysAvailabe" @bind-Value="Model.DaysAvailable" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.DaysAvailable)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="workoutLength" class="form-label" style="color: #2c3e50;">Workout Length</label>
+                    <input type="timespan" class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" id="workoutLength" placeholder="00:00" @bind-value="Model.WorkoutLength" step="600" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.WorkoutLength)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label" style="color: #2c3e50;">Email</label>
+                    <InputText class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Email" @bind-Value="Model.Email" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Email)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label" style="color: #2c3e50;">Password</label>
+                    <InputText type="password" class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Password" @bind-Value="Model.Password" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Password)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label" style="color: #2c3e50;">Confirm Password</label>
+                    <InputText type="password" class="form-control" style="background-color: #d3e3df; color: #2c3e50; border-color: #6a8fa0;" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3 mt-3">
                 <div class="col-md-12">
-                    <label for="name" class="form-label">Goal</label>
-                    <InputText class="form-control" placeholder="Goal" @bind-Value="Model.Goal" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Fitness Level</label>
-                    <InputText class="form-control" placeholder="FitnessLevel" @bind-Value="Model.FitnessLevel" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Weight</label>
-                    <InputNumber class="form-control" placeholder="Weight" @bind-Value="Model.Weight" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Gender</label>
-                    <InputText class="form-control" placeholder="Gender" @bind-Value="Model.Gender" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Age</label>
-                    <InputNumber class="form-control" placeholder="Age" @bind-Value="Model.Age" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Height</label>
-                    <InputNumber class="form-control" placeholder="Height" @bind-Value="Model.Height" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="name" class="form-label">Days Available</label>
-                    <InputNumber class="form-control" placeholder="DaysAvailabe" @bind-Value="Model.DaysAvailable" />
-                </div>
-
-                <div class="col-md-12">
-                    <label for="workoutLength" class="form-label">Workout Length</label>
-                    <input type="timespan" class="form-control" id="workoutLength" placeholder="00:00" @bind-value="Model.WorkoutLength" step="600" />
-                </div>
-
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                    <button type="submit" class="btn btn-primary w-100" style="background-color: #6a8fa0; border-color: #6a8fa0;">Register</button>
                 </div>
             </div>
         </EditForm>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -116,7 +156,7 @@
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
 
-    
+
 
 
 
@@ -131,19 +171,19 @@
                 LastName = Model.LastName,
                 Goal = Model.Goal,
                 FitnessLevel = Model.FitnessLevel,
-                Weight = Model.Weight,
+                Weight = Model.Weight ?? 0,
                 Gender = Model.Gender,
-                Age = Model.Age,
-                Height = Model.Height,
-                DaysAvailable = Model.DaysAvailable,
-                WorkoutLength = Model.WorkoutLength,
+                Age = Model.Age ?? 0,
+                Height = Model.Height ?? 0,
+                DaysAvailable = Model.DaysAvailable ?? 0,
+                WorkoutLength = Model.WorkoutLength ,
             };
 
         var roleExists = await RoleManager.RoleExistsAsync("Client");
         if (!roleExists)
-            {
-                await RoleManager.CreateAsync(new IdentityRole("Client"));
-            }
+        {
+            await RoleManager.CreateAsync(new IdentityRole("Client"));
+        }
 
         var result = await UserManager.CreateAsync(user, Model.Password);
 
@@ -156,11 +196,11 @@
 
         await UserManager.AddToRoleAsync(user, "Client");
 
-        
+
         Logger.LogInformation("User created a new account with password.");
 
 
-      
+
 
         var userId = await UserManager.GetUserIdAsync(user);
         await SignInManager.SignInAsync(user, isPersistent: false);
@@ -172,56 +212,56 @@
     //validation for inputs required for registration
     private sealed class RegisterModel
     {
-        [Required(ErrorMessage = "Enter your first name")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name and/or surname must not consist of numbers or special characters. Please re-enter.")]
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name must not consist of numbers or special characters. Please re-enter.")]
         public string FirstName { get; set; } = "";
 
 
-        [Required(ErrorMessage = "Enter your last name")]
-
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Surname must not consist of numbers or special characters. Please re-enter.")]
         public string LastName { get; set; } = "";
 
-        [Required(ErrorMessage = "Enter your email")]
-        [EmailAddress(ErrorMessage = "Enter a valid email address")]
+        [Required(ErrorMessage = "*Required")]
+        [EmailAddress(ErrorMessage = "Please re-enter email in correct format")]
         public string Email { get; set; } = "";
 
-        [Required(ErrorMessage = "Enter your password")]
+        [Required(ErrorMessage = "*Required")]
         [DataType(DataType.Password)]
-        [MinLength(10, ErrorMessage = "Password must be at least 10 characters long")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$", ErrorMessage = "Password must be at least 10 characters long, and must contain at least one uppercase letter, one number, and one special character.")]
         public string Password { get; set; } = "";
 
-        [Required(ErrorMessage = "Confirm your password")]
+
+        [Required(ErrorMessage = "*Required")]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = "";
 
-        [Required(ErrorMessage = "Select your goal")]
+        [Required(ErrorMessage = "*Required")]
         public string Goal { get; set; } = "";
 
-        [Required(ErrorMessage = "Select your fitness level")]
+        [Required(ErrorMessage = "*Required")]
         public string FitnessLevel { get; set; } = "";
 
-        [Required(ErrorMessage = "Enter your weight")]
-        [Range(1, 500, ErrorMessage = "Enter a valid weight")]
-        public double Weight { get; set; } = 0.00;
+        [Required(ErrorMessage = "*Required")]
+        [Range(0, 500, ErrorMessage = "Enter a valid weight")]
+        public double? Weight { get; set; }
 
-        [Required(ErrorMessage = "Enter your gender")]
+        [Required(ErrorMessage = "*Required")]
         public string Gender { get; set; } = "";
 
-        [Required(ErrorMessage = "Enter your age")]
-        [Range(1, 120, ErrorMessage = "Enter a valid age")]
-        public int Age { get; set; } = 0;
+        [Required(ErrorMessage = "*Required")]
+        [Range(0, 120, ErrorMessage = "Enter a valid age")]
+        public int? Age { get; set; }
 
-        [Required(ErrorMessage = "Enter your height")]
+        [Required(ErrorMessage = "*Required")]
         [Range(1, 300, ErrorMessage = "Enter a valid height")]
-        public double Height { get; set; } = 0.00;
+        public double? Height { get; set; }
 
-        [Required(ErrorMessage = "Enter your days available")]
+        [Required(ErrorMessage = "*Required")]
         [Range(1, 7, ErrorMessage = "Enter a valid number of days")]
-        public int DaysAvailable { get; set; } = 0;
+        public int? DaysAvailable { get; set; } 
 
-        [Required(ErrorMessage = "Enter your workout length")]
-        [Range(10, 300, ErrorMessage = "Enter a valid workout length in hours:minutes")]
-        public TimeSpan WorkoutLength { get; set; } = TimeSpan.Zero;
+        [Required(ErrorMessage = "*Required")]
+        public TimeSpan WorkoutLength { get; set; }
     }
 }
 
