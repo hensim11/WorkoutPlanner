@@ -65,13 +65,15 @@
     {
         if (role == "Personal Trainer")
         {
-            NavigationManager.NavigateTo("Account/RegisterPersonalTrainer");
+            NavigationManager.NavigateTo("/Account/RegisterPersonalTrainer");
         }
         else
         {
             NavigationManager.NavigateTo("/Account/RegisterClient");
         }
     }
+
+ 
 
     private sealed class RegisterModel
     {

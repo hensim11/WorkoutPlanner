@@ -9,7 +9,6 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
-
 @inject UserManager<User> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject IUserStore<User> UserStore
@@ -58,7 +57,7 @@
     </div>
 </div>
 
-@code {
+    @code {
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
@@ -70,7 +69,6 @@
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
 
-    private string role;
 
     public async Task RegisterUser(EditContext editContext)
     {
@@ -82,11 +80,6 @@
                 LastName = Model.LastName,
             };
 
-        var roleExists = await RoleManager.RoleExistsAsync("PersonalTrainer");
-        if (!roleExists)
-        {
-            await RoleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
-        }
 
         var result = await UserManager.CreateAsync(user, Model.Password);
         if (!result.Succeeded)
@@ -104,9 +97,10 @@
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
 
+        }
 
-    private sealed class RegisterModel
-    {
+      private sealed class RegisterModel
+      {
         public string FirstName { get; set; } = "";
 
         public string LastName { get; set; } = "";
@@ -116,5 +110,6 @@
         public string Password { get; set; } = "";
 
         public string ConfirmPassword { get; set; } = "";
-    }
+      }
+    
 }

@@ -30,7 +30,8 @@ builder.Services.AddIdentityCore<User>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddSignInManager();
-    
+
+
 
 
 

@@ -11,7 +11,7 @@ using WorkoutPlanner.Context;
 namespace WorkoutPlanner.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241110004207_InitialCreate")]
+    [Migration("20241110132948_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
