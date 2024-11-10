@@ -9,6 +9,6 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
    
-        public ICollection<User> Users { get; set; }
+        public ICollection<User>? Users { get; set; }
     }
 }

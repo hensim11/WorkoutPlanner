@@ -21,13 +21,13 @@ namespace WorkoutPlanner.Model
         public int DaysAvailable { get; set; }  
         public TimeSpan WorkoutLength { get; set; }  
 
-        // Navigation property to the related PersonalTrainer
-        public PersonalTrainer PersonalTrainer { get; set; }
+        
+        public PersonalTrainer? PersonalTrainers { get; set; }
 
         // Navigation property to the related workout logs
-        public ICollection<WorkoutLog> WorkoutLogs { get; set; }
+        public ICollection<WorkoutLog>? WorkoutLogs { get; set; }
 
         // Navigation property to the related favorite workouts
-        public ICollection<Favourite> Favourites { get; set; }
+        public ICollection<Favourite>? Favourites { get; set; }
     }
 }

@@ -107,7 +107,7 @@ namespace WorkoutPlanner.Migrations
                     Height = table.Column<double>(type: "REAL", nullable: false),
                     DaysAvailable = table.Column<int>(type: "INTEGER", nullable: false),
                     WorkoutLength = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    PersonalTrainerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PersonalTrainersId = table.Column<int>(type: "INTEGER", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -127,11 +127,10 @@ namespace WorkoutPlanner.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_PersonalTrainers_PersonalTrainerId",
-                        column: x => x.PersonalTrainerId,
+                        name: "FK_AspNetUsers_PersonalTrainers_PersonalTrainersId",
+                        column: x => x.PersonalTrainersId,
                         principalTable: "PersonalTrainers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -302,9 +301,9 @@ namespace WorkoutPlanner.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_PersonalTrainerId",
+                name: "IX_AspNetUsers_PersonalTrainersId",
                 table: "AspNetUsers",
-                column: "PersonalTrainerId");
+                column: "PersonalTrainersId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

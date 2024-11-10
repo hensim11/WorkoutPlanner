@@ -29,13 +29,17 @@
     <div class="card-body bg-light">
         <h4 class="card-title">Register</h4>
 
-
+   
         
         <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+            <DataAnnotationsValidator />   <!--allows for validation checks to occur-->
             <div class="row g-3">
                 <div class="col-md-12">
                     <label for="name" class="form-label">First Name</label>
                     <InputText class="form-control" placeholder="FirstName" @bind-Value="Model.FirstName" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.FirstName)" />
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <label for="name" class="form-label">Surname</label>
@@ -54,25 +58,23 @@
                     <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
                 </div>
 
-                
                 <h4>What is your Goal?</h4>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio1"  @bind="Model.Goal">
+                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio1" @bind="Model.Goal">
                     <label class="form-check-label" for="goalRadio1">
                         Muscle Gain
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio2"  @bind="Model.Goal">
+                    <input class="form-check-input" type="radio" name="goalRadio" id="goalRadio2" @bind="Model.Goal">
                     <label class="form-check-label" for="goalRadio2">
                         Fat Loss
                     </label>
                 </div>
 
-                
                 <h4>What is your Fitness Level?</h4>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="fitnessLevelRadio" id="fitnessLevelRadio1"  @bind="Model.FitnessLevel">
+                    <input class="form-check-input" type="radio" name="fitnessLevelRadio" id="fitnessLevelRadio1" @bind="Model.FitnessLevel">
                     <label class="form-check-label" for="fitnessLevelRadio1">
                         Beginner
                     </label>
@@ -89,13 +91,10 @@
                         Advanced
                     </label>
                 </div>
-
-
                 <div class="col-md-12">
                     <label for="name" class="form-label">Weight</label>
                     <InputNumber class="form-control" placeholder="Weight" @bind-Value="Model.Weight" />
                 </div>
-
                 <h4>What is your gender?</h4>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="genderRadio" id="genderRadio1" @bind="Model.Gender">
@@ -136,13 +135,14 @@
             </div>
         </EditForm>
     </div>
+ 
 </div>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
-    private RegisterModel Model { get; set; } = new();
+    private RegisterUserModel Model { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
@@ -208,7 +208,7 @@
 
 
     //validation for inputs required for registration
-    private sealed class RegisterModel
+    private sealed class RegisterUserModel
     {
         [Required(ErrorMessage = "Enter your first name")]
         public string FirstName { get; set; } = "";
@@ -221,7 +221,8 @@
         public string Email { get; set; } = "";
 
         [Required(ErrorMessage = "Enter your password")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
+        [DataType(DataType.Password)]
+        [MinLength(10, ErrorMessage = "Password must be at least 10 characters long")]
         public string Password { get; set; } = "";
 
         [Required(ErrorMessage = "Confirm your password")]

@@ -265,7 +265,7 @@ namespace WorkoutPlanner.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PersonalTrainerId")
+                    b.Property<int?>("PersonalTrainersId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PhoneNumber")
@@ -299,7 +299,7 @@ namespace WorkoutPlanner.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalTrainerId");
+                    b.HasIndex("PersonalTrainersId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -430,13 +430,11 @@ namespace WorkoutPlanner.Migrations
 
             modelBuilder.Entity("WorkoutPlanner.Model.User", b =>
                 {
-                    b.HasOne("WorkoutPlanner.Model.PersonalTrainer", "PersonalTrainer")
+                    b.HasOne("WorkoutPlanner.Model.PersonalTrainer", "PersonalTrainers")
                         .WithMany("Users")
-                        .HasForeignKey("PersonalTrainerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PersonalTrainersId");
 
-                    b.Navigation("PersonalTrainer");
+                    b.Navigation("PersonalTrainers");
                 });
 
             modelBuilder.Entity("WorkoutPlanner.Model.WorkoutLog", b =>
