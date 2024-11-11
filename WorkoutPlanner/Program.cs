@@ -15,7 +15,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-builder.Services.AddScoped<WorkoutProvider>();
+
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -25,18 +26,23 @@ builder.Services.AddAuthentication(options =>
 .AddIdentityCookies();
 
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<WorkoutProvider>();
+builder.Services.AddScoped<UserProvider>();
+builder.Services.AddScoped<PersonalTrainerProvider>();
+builder.Services.AddScoped<QuoteProvider>();
 
 builder.Services.AddIdentityCore<User>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddSignInManager();
 
+builder.Services.AddLocalization();
 
 
-
-
-builder.Services.AddScoped<DatabaseSeeder>();
 var app = builder.Build();
+
+app.UseRequestLocalization("en-GB");
 
 using var scope = app.Services.CreateScope();
 {
@@ -47,7 +53,7 @@ using var scope = app.Services.CreateScope();
 
 
 var seeder = scope.ServiceProvider.GetService<DatabaseSeeder>();
-    await seeder!.Seed();
+await seeder!.Seed();
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())

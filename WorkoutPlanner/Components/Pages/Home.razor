@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
-<link rel="stylesheet" href="Home.css">
+
 
 <PageTitle>Home</PageTitle>
 
@@ -15,8 +15,8 @@
                 <h2 class="mb-4" style="color: #333;">Welcome to Your Workout Planner</h2>
                 <p class="mb-4" style="color: #555;">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
                 <div class="d-grid gap-2 d-md-block">
-                    <NavLink class="btn btn-primary" type="button" @onclick="GoToLogin">Log in</NavLink>
-                    <button class="btn btn-primary" type="button" @onclick="GoToRegister">Register</button>
+                    <NavLink class="btn btn-outline-primary" href="/Account/Login" Match="NavLinkMatch.Prefix">Login</NavLink>
+                    <NavLink class="btn btn-outline-success" href="/Account/Register" Match="NavLinkMatch.Prefix">Register</NavLink>
                    
                 </div>
             </div>
@@ -39,7 +39,7 @@
 
     private void GoToLogin()
     {
-        NavigationManager.NavigateTo("/Login");
+        NavigationManager.NavigateTo("/Account/Login");
     }
 
     private void GoToRegister()

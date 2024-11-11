@@ -25,13 +25,27 @@ namespace WorkoutPlanner.Context
         {
             await _context.Database.MigrateAsync();
 
+            if (!_context.Quotes.Any())
+            {
+                var quotes = GetQuotes();
+                _context.Quotes.AddRange(quotes);
+                await _context!.SaveChangesAsync();
+            }
+
+            if (!_context.Workouts.Any())
+            {
+                var workouts = GetWorkouts();
+                _context.Workouts.AddRange(workouts);
+                await _context!.SaveChangesAsync();
+            }
+
+
+
+
             if (!_context.Users.Any())
             {
                 await _roleManager.CreateAsync(new IdentityRole("Client"));
                 await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
-
-
-
             }
 
 
@@ -74,5 +88,32 @@ namespace WorkoutPlanner.Context
                     new Workout { ExerciseName = "Face Pull", Reps = 12, Sets = 3, Weight = 25, RestTime = 60, ExerciseInfo = "Targets the rear delts, traps, and upper back." },
                 ];
             }
+
+        private List<Quote> GetQuotes()
+        {
+            return
+                [
+                    new Quote { QuoteName = "Push yourself because no one else is going to do it for you." },
+                    new Quote { QuoteName = "The only bad workout is the one that didn't happen." },
+                    new Quote { QuoteName = "Train insane or remain the same." },
+                    new Quote { QuoteName = "You don't have to be great to start, but you have to start to be great." },
+                    new Quote { QuoteName = "No matter how slow you go, you're still lapping everyone on the couch." },
+                    new Quote { QuoteName = "Sweat is just fat crying." },
+                    new Quote { QuoteName = "Fitness is not about being better than someone else. It's about being better than you used to be." },
+                    new Quote { QuoteName = "If it doesn’t challenge you, it doesn’t change you." },
+                    new Quote { QuoteName = "Results happen over time, not overnight. Work hard, stay consistent, and be patient." },
+                    new Quote { QuoteName = "The body achieves what the mind believes." },
+                    new Quote { QuoteName = "The pain you feel today will be the strength you feel tomorrow." },
+                    new Quote { QuoteName = "Don't stop when you're tired. Stop when you're done." },
+                    new Quote { QuoteName = "You are stronger than you think." },
+                    new Quote { QuoteName = "Your body can stand almost anything. It’s your mind that you have to convince." },
+                    new Quote { QuoteName = "When you feel like quitting, think about why you started." },
+                    new Quote { QuoteName = "Success is what comes after you stop making excuses." },
+                    new Quote { QuoteName = "Strive for progress, not perfection." },
+                    new Quote { QuoteName = "Strength doesn’t come from what you can do. It comes from overcoming the things you once thought you couldn’t." },
+                    new Quote { QuoteName = "Motivation is what gets you started. Habit is what keeps you going." },
+                    new Quote { QuoteName = "The hardest lift of all is lifting your butt off the couch." }
+                ];
+        }
     }
 }
