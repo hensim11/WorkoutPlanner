@@ -4,9 +4,35 @@
 @using WorkoutPlanner.Model
 
 
-
 <h3>Plan</h3>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>Workout Name</th>
+            <th>Category</th>
+            <th>Duration (mins)</th>
+            <th>Reps</th>
+            <th>Sets</th>
+            <th>Weight (kg)</th>
+            <th>Rest Time (secs)</th>
+            <th>Exercise Info</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var workout in workouts)
+        {
+            <tr>
+                <td>@workout.ExerciseName</td>
+                <td>@workout.Reps</td>
+                <td>@workout.Sets</td>
+                <td>@workout.Weight</td>
+                <td>@workout.RestTime</td>
+                <td>@workout.ExerciseInfo</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 
 
