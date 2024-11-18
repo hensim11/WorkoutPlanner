@@ -1,7 +1,9 @@
 ﻿@page "/plan"
+
 @using Microsoft.EntityFrameworkCore
 @using WorkoutPlanner.Context
 @using WorkoutPlanner.Model
+
 
 
 <h3>Plan</h3>
@@ -20,21 +22,20 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var workout in workouts)
-        {
+       
+        
             <tr>
-                <td>@workout.ExerciseName</td>
-                <td>@workout.Reps</td>
-                <td>@workout.Sets</td>
-                <td>@workout.Weight</td>
-                <td>@workout.RestTime</td>
-                <td>@workout.ExerciseInfo</td>
+                <td>@Workout.ExerciseName</td>
+                
             </tr>
-        }
+        
     </tbody>
 </table>
 
 @code {
-    private List<Workout> workouts;
-}
 
+    [Parameter]
+    public Workout Workout { get; set; } = new Workout();
+    private List<Workout> workouts;
+
+}
