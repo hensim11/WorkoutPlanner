@@ -1,19 +1,18 @@
 ﻿@page "/plan"
 
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using WorkoutPlanner.Context
 @using WorkoutPlanner.Model
-
-
+@attribute [Authorize]
 
 <h3>Plan</h3>
 
+@* here a table is displayed with the different details of the workout as headings*@
 <table class="table">
     <thead>
         <tr>
             <th>Workout Name</th>
-            <th>Category</th>
-            <th>Duration (mins)</th>
             <th>Reps</th>
             <th>Sets</th>
             <th>Weight (kg)</th>
@@ -22,20 +21,43 @@
         </tr>
     </thead>
     <tbody>
-       
-        
+        @* this displays the information in the database under the required columns of the table *@
+        @if (workouts != null && workouts.Any())
+        {
+            foreach (var workout in workouts)
+            {
+                <tr>
+                    <td>@workout.ExerciseName</td>
+                    <td>@workout.Reps</td>
+                    <td>@workout.Sets</td>
+                    <td>@workout.Weight</td>
+                    <td>@workout.RestTime</td>
+                    <td>@workout.ExerciseInfo</td>
+                </tr>
+            }
+        }
+        else
+        {
+         @* code to inform the user that workouts cannot be displayed *@
             <tr>
-                <td>@Workout.ExerciseName</td>
-                
+                <td colspan="7" class="text-center">No workouts available</td>
             </tr>
-        
+        }
     </tbody>
 </table>
 
 @code {
-
-    [Parameter]
-    public Workout Workout { get; set; } = new Workout();
     private List<Workout> workouts;
+
+    [Inject]
+    private DatabaseContext DbContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch workouts from the database
+        workouts = await DbContext.Workouts.ToListAsync();
+
+    }
+
 
 }
