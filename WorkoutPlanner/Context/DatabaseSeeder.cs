@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WorkoutPlanner.Model;
 using WorkoutPlanner.Components;
+using System.Runtime.Intrinsics.X86;
 
 
 
@@ -13,12 +14,13 @@ namespace WorkoutPlanner.Context
         private readonly DatabaseContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
-        public DatabaseSeeder(DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly WorkoutProvider _workoutProvider;
+        public DatabaseSeeder(DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, WorkoutProvider workoutProvider)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _workoutProvider = workoutProvider;
         }
 
         public async Task Seed()
@@ -46,6 +48,8 @@ namespace WorkoutPlanner.Context
             {
                 await _roleManager.CreateAsync(new IdentityRole("Client"));
                 await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
+
+                
             }
 
 

@@ -24,6 +24,8 @@ namespace WorkoutPlanner.Model
         
         public PersonalTrainer? PersonalTrainers { get; set; }
 
+        public ICollection<Workout> Workouts { get; set; }
+
         // Navigation property to the related workout logs
         public ICollection<WorkoutLog>? WorkoutLogs { get; set; }
 

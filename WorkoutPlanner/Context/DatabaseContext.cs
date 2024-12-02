@@ -19,6 +19,18 @@ namespace WorkoutPlanner.Context
             _environment = environment;
         }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Define the relationship between Workout and User
+            modelBuilder.Entity<Workout>()
+                .HasOne(w => w.User) // A Workout has one User
+                .WithMany(u => u.Workouts) // A User can have many Workouts
+                .HasForeignKey(w => w.UserId);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionbuilder)
         {
             var folder = Path.Combine(_environment.WebRootPath, "database");

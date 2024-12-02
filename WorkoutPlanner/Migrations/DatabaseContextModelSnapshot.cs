@@ -330,10 +330,15 @@ namespace WorkoutPlanner.Migrations
                     b.Property<int>("Sets")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Weight")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Workouts");
                 });
@@ -437,6 +442,15 @@ namespace WorkoutPlanner.Migrations
                     b.Navigation("PersonalTrainers");
                 });
 
+            modelBuilder.Entity("WorkoutPlanner.Model.Workout", b =>
+                {
+                    b.HasOne("WorkoutPlanner.Model.User", "User")
+                        .WithMany("Workouts")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WorkoutPlanner.Model.WorkoutLog", b =>
                 {
                     b.HasOne("WorkoutPlanner.Model.User", "User")
@@ -466,6 +480,8 @@ namespace WorkoutPlanner.Migrations
                     b.Navigation("Favourites");
 
                     b.Navigation("WorkoutLogs");
+
+                    b.Navigation("Workouts");
                 });
 #pragma warning restore 612, 618
         }

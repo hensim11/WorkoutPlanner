@@ -1,10 +1,14 @@
 ﻿@page "/plan"
 
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using WorkoutPlanner.Context
 @using WorkoutPlanner.Model
 @attribute [Authorize]
+@inject UserManager<User> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Plan</h3>
 
@@ -32,7 +36,7 @@
                     <td>@workout.Sets</td>
                     <td>@workout.Weight</td>
                     <td>@workout.RestTime</td>
-                    <td>@workout.ExerciseInfo</td>
+                    <td><a href="@($"/info/{workout.Id}")">View Details</a></td>
                 </tr>
             }
         }
@@ -56,6 +60,30 @@
     {
         // Fetch workouts from the database
         workouts = await DbContext.Workouts.ToListAsync();
+
+        // Fetch the logged-in user's ID
+        // Get the logged-in user's email
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var email = authState.User.Identity?.Name;
+
+        if (!string.IsNullOrEmpty(email))
+        {
+            // Fetch the user by email
+            var user = await UserManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                // Fetch workouts specific to the logged-in user
+                workouts = await DbContext.Workouts
+                    .Where(w => w.UserId == user.Id)
+                    .ToListAsync();
+            }
+        }
+        else
+        {
+            workouts = new List<Workout>();
+        }
+       
 
     }
 

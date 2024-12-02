@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using Microsoft.EntityFrameworkCore
 @using WorkoutPlanner.Context
 @using WorkoutPlanner.Components.Account.Shared
 @using WorkoutPlanner.Model
@@ -17,6 +18,9 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject WorkoutProvider WorkoutProvider
+@inject DatabaseContext DbContext
+
 
 
 
@@ -157,10 +161,6 @@
     private bool isError;
 
 
-
-
-
-
     public async Task RegisterUser(EditContext editContext)
     {
         var user = new User
@@ -189,6 +189,10 @@
 
         if (!result.Succeeded)
         {
+            await WorkoutProvider.RandomWorkoutAsync(user.Id, 5);
+            var assignedWorkouts = await DbContext.Workouts
+            .Where(w => w.UserId == user.Id)
+            .ToListAsync();
             identityErrors = result.Errors;
             isError = true;
             return;
@@ -206,6 +210,22 @@
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
 
+    }
+
+    private async Task RandomWorkoutAsync(string userId, int numberOfWorkouts)
+    {
+        var randomWorkouts = await DbContext.Workouts
+            .OrderBy(w => Guid.NewGuid()) // Randomize workouts
+            .Take(numberOfWorkouts)
+            .ToListAsync();
+
+        foreach (var workout in randomWorkouts)
+        {
+            workout.UserId = userId; // Associate the workout with the user
+        }
+
+        await DbContext.SaveChangesAsync();
+        
     }
 
 
