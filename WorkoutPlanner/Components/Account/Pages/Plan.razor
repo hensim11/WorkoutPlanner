@@ -1,5 +1,6 @@
 ﻿@page "/plan"
 
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -9,6 +10,8 @@
 @attribute [Authorize]
 @inject UserManager<User> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject WorkoutProvider WorkoutProvider
+@inject UserProvider UserProvider
 
 <h3>Plan</h3>
 
@@ -53,39 +56,24 @@
 @code {
     private List<Workout> workouts;
 
-    [Inject]
-    private DatabaseContext DbContext { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        // Fetch workouts from the database
-        workouts = await DbContext.Workouts.ToListAsync();
+        workouts = new List<Workout>();
 
-        // Fetch the logged-in user's ID
-        // Get the logged-in user's email
+        // Get the logged-in user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var email = authState.User.Identity?.Name;
+        var username = authState.User.Identity.Name;
 
-        if (!string.IsNullOrEmpty(email))
+        if (!string.IsNullOrEmpty(username))
         {
-            // Fetch the user by email
-            var user = await UserManager.FindByEmailAsync(email);
+            // Find the user in the system
+            var user = await UserManager.FindByNameAsync(username);
 
             if (user != null)
             {
-                // Fetch workouts specific to the logged-in user
-                workouts = await DbContext.Workouts
-                    .Where(w => w.UserId == user.Id)
-                    .ToListAsync();
+                // Fetch workouts linked to the logged-in user
+                workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
             }
         }
-        else
-        {
-            workouts = new List<Workout>();
-        }
-       
-
     }
-
-
 }

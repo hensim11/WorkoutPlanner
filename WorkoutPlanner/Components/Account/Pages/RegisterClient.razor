@@ -10,7 +10,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
-
+@inject WorkoutProvider WorkoutProvider
 @inject UserManager<User> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject IUserStore<User> UserStore
@@ -185,18 +185,19 @@
             await RoleManager.CreateAsync(new IdentityRole("Client"));
         }
 
+     
         var result = await UserManager.CreateAsync(user, Model.Password);
+       
 
         if (!result.Succeeded)
         {
-            await WorkoutProvider.RandomWorkoutAsync(user.Id, 5);
-            var assignedWorkouts = await DbContext.Workouts
-            .Where(w => w.UserId == user.Id)
-            .ToListAsync();
             identityErrors = result.Errors;
             isError = true;
             return;
         }
+
+        // Assign random workouts to the user
+        
 
         await UserManager.AddToRoleAsync(user, "Client");
 
@@ -207,26 +208,16 @@
 
 
         var userId = await UserManager.GetUserIdAsync(user);
+        // Assign random workouts to the new user
+        int workoutCount = 5; // Set how many random workouts to assign
+        await WorkoutProvider.AssignRandomWorkoutsToUserAsync(userId, workoutCount);
+
         await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo(ReturnUrl);
+        RedirectManager.RedirectTo("/plan");
 
     }
 
-    private async Task RandomWorkoutAsync(string userId, int numberOfWorkouts)
-    {
-        var randomWorkouts = await DbContext.Workouts
-            .OrderBy(w => Guid.NewGuid()) // Randomize workouts
-            .Take(numberOfWorkouts)
-            .ToListAsync();
 
-        foreach (var workout in randomWorkouts)
-        {
-            workout.UserId = userId; // Associate the workout with the user
-        }
-
-        await DbContext.SaveChangesAsync();
-        
-    }
 
 
     //validation for inputs required for registration

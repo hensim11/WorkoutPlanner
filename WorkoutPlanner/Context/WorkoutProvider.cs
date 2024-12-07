@@ -5,7 +5,6 @@ namespace WorkoutPlanner.Context
 {
     public class WorkoutProvider
     {
-
         private readonly DatabaseContext _context;
 
         public WorkoutProvider(DatabaseContext context)
@@ -13,39 +12,38 @@ namespace WorkoutPlanner.Context
             _context = context;
         }
 
-        public async Task RandomWorkoutAsync(string userId, int numberOfWorkouts = 5)
+        public async Task<List<Workout>> GetWorkoutsForUserAsync(string userId)
         {
-            // Fetch random workouts from the database
-            var randomWorkouts = _context.Workouts
-                .OrderBy(w => Guid.NewGuid()) // Randomize order
-                .Take(numberOfWorkouts) // Select the specified number of workouts
+            return await _context.Workouts
+                .Where(w => w.UserId == userId) // Filter by user
+                .ToListAsync();
+        }
+
+        public async Task AssignRandomWorkoutsToUserAsync(string userId, int count)
+        {
+            // Get all workouts from the shared pool
+            var allWorkouts = await _context.Workouts.ToListAsync();
+
+            // Randomly select workouts (ensure no duplicates for the user)
+            var randomWorkouts = allWorkouts
+                .OrderBy(_ => Guid.NewGuid()) // Shuffle workouts
+                .Take(count) // Take the desired number
+                .Select(w => new Workout
+                {
+                    ExerciseName = w.ExerciseName,
+                    Reps = w.Reps,
+                    Sets = w.Sets,
+                    Weight = w.Weight,
+                    RestTime = w.RestTime,
+                    ExerciseInfo = w.ExerciseInfo,
+                    UserId = userId // Link to the new user
+                })
                 .ToList();
 
-            // Assign the workouts to the user
-            foreach (var workout in randomWorkouts)
-            {
-                _context.Workouts.Add(new Workout
-                {
-                    ExerciseName = workout.ExerciseName,
-                    Reps = workout.Reps,
-                    Sets = workout.Sets,
-                    Weight = workout.Weight,
-                    RestTime = workout.RestTime,
-                    ExerciseInfo = workout.ExerciseInfo,
-                    UserId = userId // Associate with the new user
-                });
-            }
-
+            // Add the random workouts to the database
+            await _context.Workouts.AddRangeAsync(randomWorkouts);
             await _context.SaveChangesAsync();
         }
-
-
-        public Workout? GetWorkout(int id)
-        {
-            return _context.Workouts.Find(id);
-        }
-
-
-       
     }
+
 }

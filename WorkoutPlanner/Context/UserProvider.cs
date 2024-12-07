@@ -16,9 +16,9 @@ namespace WorkoutPlanner.Context
           
         }
 
-        public User? GetUserByName(string? name)
+        public User? GetUserByUsername(string? username)
         {
-            return _context.Users.FirstOrDefault(x => user.FirstName == name);
+            return _context.Users.FirstOrDefault(user => user.UserName == username);
         }
 
       
