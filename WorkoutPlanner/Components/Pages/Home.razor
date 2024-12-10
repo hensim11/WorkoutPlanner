@@ -1,7 +1,10 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using WorkoutPlanner.Context
 @inherits LayoutComponentBase
+@inject UserProvider UserProvider
 
 
 
@@ -28,9 +31,77 @@
     <div class="p-4 rounded" style="background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
         @Body
     </div>
+    <h3>Your Plan</h3>
+
+    @if (isLoading)
+    {
+        <p>Loading your plan...</p>
+    }
+    else if (weekPlans != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    @for (int week = 1; week <= 4; week++)
+                    {
+                        <th>Week @week</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (int day = 1; day <= 7; day++)
+                {
+                    <tr>
+                        @foreach (var week in weekPlans)
+                        {
+                            <td>
+                                @if (week.Days.First(d => d.DayNumber == day).IsRestDay)
+                                {
+                                    <span>Rest</span>
+                                }
+                                else
+                                {
+                                    <a href="/plan?week=@week.WeekNumber&day=@day">View Workout</a>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No plan available.</p>
+    }
 </main>
 
 @code{
+
+    private List<WeekPlan> weekPlans;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var username = authState?.User?.Identity?.Name;
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                var user = await UserManager.FindByNameAsync(username);
+                if (user != null)
+                {
+                    weekPlans = await WorkoutPlanProvider.GenerateWorkoutPlanAsync(user.Id, user.DaysAvailable);
+                }
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 
     private void GoToPlan()
     {
