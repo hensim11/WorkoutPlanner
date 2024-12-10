@@ -1,11 +1,18 @@
 ﻿@page "/"
+
 @inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @using WorkoutPlanner.Context
+@using WorkoutPlanner.Model
+@using Microsoft.EntityFrameworkCore
 @inherits LayoutComponentBase
+@attribute [Authorize]
 @inject UserProvider UserProvider
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<User> UserManager
+@inject WorkoutPlanProvider WorkoutPlanProvider
 
 
 <PageTitle>Home</PageTitle>

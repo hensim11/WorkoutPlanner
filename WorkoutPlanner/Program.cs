@@ -31,6 +31,7 @@ builder.Services.AddScoped<WorkoutProvider>();
 builder.Services.AddScoped<UserProvider>();
 builder.Services.AddScoped<PersonalTrainerProvider>();
 builder.Services.AddScoped<QuoteProvider>();
+builder.Services.AddScoped<WorkoutPlanProvider>();
 
 builder.Services.AddIdentityCore<User>()
     .AddRoles<IdentityRole>()

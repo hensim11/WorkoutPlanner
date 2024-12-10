@@ -1,5 +1,6 @@
 ﻿@page "/plan"
 
+@inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -11,81 +12,83 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject WorkoutProvider WorkoutProvider
 @inject UserProvider UserProvider
+@inject WorkoutPlanProvider WorkoutPlanProvider
 
-<h3 class="text-center mt-4" style="color: #5D6D7E;">Workout Plan</h3>
+<h3>Workouts for @dayName</h3>
 
-<div class="container mt-4">
-    <div class="card shadow-sm" style="border: 1px solid #AAB7B8; background-color: #EAF2F8;">
-        <div class="card-header text-center" style="background-color: #5D6D7E; color: #FFFFFF;">
-            <h5>Workout Details</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-hover text-center align-middle" style="border: 1px solid #AAB7B8;">
-                <thead style="background-color: #85A5C3; color: #FFFFFF;">
-                    <tr>
-                        <th>Workout Name</th>
-                        <th>Reps</th>
-                        <th>Sets</th>
-                        <th>Weight (kg)</th>
-                        <th>Rest Time (secs)</th>
-                        <th>Exercise Info</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (workouts != null && workouts.Any())
-                    {
-                        foreach (var workout in workouts)
-                        {
-                            <tr style="background-color: #F4F6F7; border-bottom: 1px solid #AAB7B8;">
-                                <td>@workout.ExerciseName</td>
-                                <td>@workout.Reps</td>
-                                <td>@workout.Sets</td>
-                                <td>@workout.Weight</td>
-                                <td>@workout.RestTime</td>
-                                <td>
-                                    <a class="btn btn-sm" href="@($"/info/{workout.Id}")" 
-                                       style="background-color: #85A5C3; color: #FFFFFF; border: none;">
-                                        View Details
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted" style="background-color: #F4F6F7;">
-                                No workouts available
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+@if (isLoading)
+{
+    <p>Loading workouts...</p>
+}
+else if (workouts != null && workouts.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Workout Name</th>
+                <th>Reps</th>
+                <th>Sets</th>
+                <th>Weight (kg)</th>
+                <th>Rest Time (secs)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var workout in workouts)
+            {
+                <tr>
+                    <td>@workout.ExerciseName</td>
+                    <td>@workout.Reps</td>
+                    <td>@workout.Sets</td>
+                    <td>@workout.Weight</td>
+                    <td>@workout.RestTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No workouts available for this day.</p>
+}
 
 @code {
     private List<Workout> workouts;
+    private bool isLoading = true;
+    private string dayName;
 
-    protected override async Task OnInitializedAsync()
+    [Parameter] public int Week { get; set; }
+    [Parameter] public int Day { get; set; }
+
+    protected override async Task OnParametersSetAsync()
     {
-        workouts = new List<Workout>();
-
-        // Get the logged-in user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var username = authState.User.Identity.Name;
-
-        if (!string.IsNullOrEmpty(username))
+        try
         {
-            // Find the user in the system
-            var user = await UserManager.FindByNameAsync(username);
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var username = authState?.User?.Identity?.Name;
 
-            if (user != null)
+            if (!string.IsNullOrEmpty(username))
             {
-                // Fetch workouts linked to the logged-in user
-                workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
+                var user = await UserManager.FindByNameAsync(username);
+                if (user != null)
+                {
+                    var weekPlans = await WorkoutPlanProvider.GenerateWorkoutPlanAsync(user.Id, user.DaysAvailable);
+                    var planForDay = weekPlans.First(w => w.WeekNumber == Week).Days.First(d => d.DayNumber == Day);
+
+                    if (!planForDay.IsRestDay)
+                    {
+                        workouts = planForDay.Workouts;
+                        dayName = $"Week {Week}, Day {Day}";
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/home");
+                    }
+                }
             }
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
