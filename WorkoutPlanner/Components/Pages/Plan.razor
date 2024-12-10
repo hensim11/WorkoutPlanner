@@ -1,6 +1,5 @@
 ﻿@page "/plan"
 
-
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -13,71 +12,80 @@
 @inject WorkoutProvider WorkoutProvider
 @inject UserProvider UserProvider
 
-<h3>Plan</h3>
+<h3 class="text-center mt-4" style="color: #5D6D7E;">Workout Plan</h3>
 
-@* here a table is displayed with the different details of the workout as headings*@
-<table class="table">
-    <thead>
-        <tr>
-            <th>Workout Name</th>
-            <th>Reps</th>
-            <th>Sets</th>
-            <th>Weight (kg)</th>
-            <th>Rest Time (secs)</th>
-            <th>Exercise Info</th>
-        </tr>
-    </thead>
-    <tbody>
-        @* this displays the information in the database under the required columns of the table *@
-        @if (workouts != null && workouts.Any())
-        {
-            foreach (var workout in workouts)
-            {
-                <tr>
-                    <td>@workout.ExerciseName</td>
-                    <td>@workout.Reps</td>
-                    <td>@workout.Sets</td>
-                    <td>@workout.Weight</td>
-                    <td>@workout.RestTime</td>
-                    <td><a href="@($"/info/{workout.Id}")">View Details</a></td>
-                </tr>
-            }
-        }
-        else
-        {
-         @* code to inform the user that workouts cannot be displayed *@
-            <tr>
-                <td colspan="7" class="text-center">No workouts available</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-4">
+    <div class="card shadow-sm" style="border: 1px solid #AAB7B8; background-color: #EAF2F8;">
+        <div class="card-header text-center" style="background-color: #5D6D7E; color: #FFFFFF;">
+            <h5>Workout Details</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover text-center align-middle" style="border: 1px solid #AAB7B8;">
+                <thead style="background-color: #85A5C3; color: #FFFFFF;">
+                    <tr>
+                        <th>Workout Name</th>
+                        <th>Reps</th>
+                        <th>Sets</th>
+                        <th>Weight (kg)</th>
+                        <th>Rest Time (secs)</th>
+                        <th>Exercise Info</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (workouts != null && workouts.Any())
+                    {
+                        foreach (var workout in workouts)
+                        {
+                            <tr style="background-color: #F4F6F7; border-bottom: 1px solid #AAB7B8;">
+                                <td>@workout.ExerciseName</td>
+                                <td>@workout.Reps</td>
+                                <td>@workout.Sets</td>
+                                <td>@workout.Weight</td>
+                                <td>@workout.RestTime</td>
+                                <td>
+                                    <a class="btn btn-sm" href="@($"/info/{workout.Id}")" 
+                                       style="background-color: #85A5C3; color: #FFFFFF; border: none;">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted" style="background-color: #F4F6F7;">
+                                No workouts available
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @code {
     private List<Workout> workouts;
 
     protected override async Task OnInitializedAsync()
     {
-            workouts = new List<Workout>();
+        workouts = new List<Workout>();
 
-            // Get the logged-in user
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var username = authState.User.Identity.Name;
+        // Get the logged-in user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
 
-            if (!string.IsNullOrEmpty(username))
+        if (!string.IsNullOrEmpty(username))
+        {
+            // Find the user in the system
+            var user = await UserManager.FindByNameAsync(username);
+
+            if (user != null)
             {
-                // Find the user in the system
-                var user = await UserManager.FindByNameAsync(username);
-
-                if (user != null)
-                {
-                    // Fetch workouts linked to the logged-in user
-                   workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
-                }
+                // Fetch workouts linked to the logged-in user
+                workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
             }
         }
-        
-        
     }
-
-
+}
