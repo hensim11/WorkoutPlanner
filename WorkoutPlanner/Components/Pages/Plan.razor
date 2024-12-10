@@ -58,22 +58,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        workouts = new List<Workout>();
+            workouts = new List<Workout>();
 
-        // Get the logged-in user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var username = authState.User.Identity.Name;
+            // Get the logged-in user
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var username = authState.User.Identity.Name;
 
-        if (!string.IsNullOrEmpty(username))
-        {
-            // Find the user in the system
-            var user = await UserManager.FindByNameAsync(username);
-
-            if (user != null)
+            if (!string.IsNullOrEmpty(username))
             {
-                // Fetch workouts linked to the logged-in user
-                workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
+                // Find the user in the system
+                var user = await UserManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    // Fetch workouts linked to the logged-in user
+                   workouts = await WorkoutProvider.GetWorkoutsForUserAsync(user.Id);
+                }
             }
         }
+        
+        
     }
-}
+
+

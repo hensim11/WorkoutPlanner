@@ -89,6 +89,26 @@ namespace WorkoutPlanner.Context
                     new Workout { ExerciseName = "Incline Bench Press", Reps = 10, Sets = 3, Weight = 50, RestTime = 90, ExerciseInfo = "Focuses on the upper chest and shoulders." },
                     new Workout { ExerciseName = "Hammer Curl", Reps = 12, Sets = 3, Weight = 15, RestTime = 60, ExerciseInfo = "Targets both the biceps and forearms." },
                     new Workout { ExerciseName = "Face Pull", Reps = 12, Sets = 3, Weight = 25, RestTime = 60, ExerciseInfo = "Targets the rear delts, traps, and upper back." },
+                    new Workout { ExerciseName = "Overhead Tricep Extension", Reps = 12, Sets = 3, Weight = 20, RestTime = 60, ExerciseInfo = "Targets the triceps using an overhead motion." },
+                    new Workout { ExerciseName = "Cable Row", Reps = 12, Sets = 3, Weight = 50, RestTime = 90, ExerciseInfo = "Focuses on the back, biceps, and shoulders." },
+                    new Workout { ExerciseName = "Dumbbell Fly", Reps = 12, Sets = 3, Weight = 15, RestTime = 60, ExerciseInfo = "Isolates the chest muscles, focusing on the pecs." },
+                    new Workout { ExerciseName = "Dumbbell Side Lateral Raise", Reps = 12, Sets = 3, Weight = 10, RestTime = 60, ExerciseInfo = "Targets the lateral deltoids for wider shoulders." },
+                    new Workout { ExerciseName = "Arnold Press", Reps = 10, Sets = 3, Weight = 30, RestTime = 90, ExerciseInfo = "A shoulder exercise that includes rotation for deltoid engagement." },
+                    new Workout { ExerciseName = "Front Raise", Reps = 12, Sets = 3, Weight = 10, RestTime = 60, ExerciseInfo = "Targets the front deltoids." },
+                    new Workout { ExerciseName = "Good Morning", Reps = 10, Sets = 3, Weight = 40, RestTime = 90, ExerciseInfo = "Strengthens the lower back, glutes, and hamstrings." },
+                    new Workout { ExerciseName = "Farmer's Carry", Reps = 20, Sets = 3, Weight = 30, RestTime = 60, ExerciseInfo = "Improves grip strength, core stability, and overall endurance." },
+                    new Workout { ExerciseName = "Dumbbell Shrug", Reps = 15, Sets = 3, Weight = 40, RestTime = 60, ExerciseInfo = "Focuses on the trapezius muscles for stronger shoulders." },
+                    new Workout { ExerciseName = "Sumo Deadlift", Reps = 8, Sets = 3, Weight = 90, RestTime = 120, ExerciseInfo = "A variation of the deadlift targeting the glutes and inner thighs." },
+                    new Workout { ExerciseName = "Reverse Lunge", Reps = 12, Sets = 3, Weight = 20, RestTime = 60, ExerciseInfo = "Targets the glutes, quads, and hamstrings with an emphasis on balance." },
+                    new Workout { ExerciseName = "Side Plank", Reps = 1, Sets = 3, Weight = 0, RestTime = 60, ExerciseInfo = "Strengthens the obliques and stabilizer muscles." },
+                    new Workout { ExerciseName = "Bulgarian Split Squat", Reps = 12, Sets = 3, Weight = 20, RestTime = 90, ExerciseInfo = "Targets the quads, glutes, and hamstrings." },
+                    new Workout { ExerciseName = "Pec Deck", Reps = 12, Sets = 3, Weight = 50, RestTime = 60, ExerciseInfo = "Isolates the chest muscles using a machine." },
+                    new Workout { ExerciseName = "Incline Dumbbell Fly", Reps = 12, Sets = 3, Weight = 15, RestTime = 60, ExerciseInfo = "Targets the upper chest with a wider range of motion." },
+                    new Workout { ExerciseName = "Machine Leg Curl", Reps = 12, Sets = 3, Weight = 40, RestTime = 60, ExerciseInfo = "Isolates the hamstrings for lower body strength." },
+                    new Workout { ExerciseName = "Machine Leg Extension", Reps = 12, Sets = 3, Weight = 40, RestTime = 60, ExerciseInfo = "Isolates the quads for strengthening." },
+                    new Workout { ExerciseName = "Seated Dumbbell Press", Reps = 12, Sets = 3, Weight = 25, RestTime = 90, ExerciseInfo = "Targets the shoulders, specifically the deltoids." },
+                    new Workout { ExerciseName = "Dumbbell Chest Press", Reps = 10, Sets = 3, Weight = 30, RestTime = 90, ExerciseInfo = "A chest exercise with greater control and range of motion." },
+                    new Workout { ExerciseName = "Landmine Twist", Reps = 12, Sets = 3, Weight = 20, RestTime = 60, ExerciseInfo = "Engages the obliques and core using a landmine setup." }
                 ];
             }
 
