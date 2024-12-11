@@ -14,12 +14,14 @@ namespace WorkoutPlanner.Context
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly WorkoutProvider _workoutProvider;
-        public DatabaseSeeder(DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, WorkoutProvider workoutProvider)
+        private readonly WorkoutPlanProvider _workoutPlanProvider;
+        public DatabaseSeeder(DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, WorkoutProvider workoutProvider, WorkoutPlanProvider workoutPlanProvider)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _workoutProvider = workoutProvider;
+            _workoutPlanProvider = workoutPlanProvider;
         }
 
         public async Task Seed()
@@ -42,20 +44,68 @@ namespace WorkoutPlanner.Context
 
 
 
-
-            if (!_context.Users.Any())
+            if (!_context.WeekPlans.Any())
             {
-                await _roleManager.CreateAsync(new IdentityRole("Client"));
-                await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
+                var users = await _context.Users.ToListAsync();
+                var weekPlans = new List<WeekPlan>();
 
-                
+                foreach (var user in users)
+                {
+                    for (int weekNumber = 1; weekNumber <= 4; weekNumber++)
+                    {
+                        var weekPlan = new WeekPlan
+                        {
+                            WeekNumber = weekNumber,
+                            Days = new List<DayPlan>()
+                        };
+
+                        // Use user's DaysAvailable to generate workout days
+                        var workoutDays = GenerateWorkoutDays(user.DaysAvailable);
+                        var allWorkouts = await _context.Workouts.ToListAsync();
+                        var random = new Random();
+
+                        for (int dayNumber = 1; dayNumber <= 7; dayNumber++)
+                        {
+                            weekPlan.Days.Add(new DayPlan
+                            {
+                                DayNumber = dayNumber,
+                                IsRestDay = !workoutDays.Contains(dayNumber),
+                                Workouts = workoutDays.Contains(dayNumber)
+                                    ? allWorkouts.OrderBy(_ => random.Next()).Take(5).ToList()
+                                    : new List<Workout>()
+                            });
+                        }
+
+                        weekPlans.Add(weekPlan);
+                    }
+                }
+
+                _context.WeekPlans.AddRange(weekPlans);
+                await _context.SaveChangesAsync();
             }
 
 
 
 
 
+
+            if (!_context.Users.Any())
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Client"));
+                await _roleManager.CreateAsync(new IdentityRole("PersonalTrainer"));
+            }
+        
         }
+
+        private List<int> GenerateWorkoutDays(int daysAvailable)
+        {
+            // Randomly select 'daysAvailable' days out of 7 days
+            return Enumerable.Range(1, 7)
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(daysAvailable)
+                .ToList();
+        }
+
 
 
 

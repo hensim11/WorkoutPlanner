@@ -11,7 +11,7 @@ using WorkoutPlanner.Context;
 namespace WorkoutPlanner.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241207200531_InitialCreate")]
+    [Migration("20241211214117_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -146,6 +146,28 @@ namespace WorkoutPlanner.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("WorkoutPlanner.Model.DayPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DayNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRestDay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WeekPlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WeekPlanId");
+
+                    b.ToTable("DayPlans");
                 });
 
             modelBuilder.Entity("WorkoutPlanner.Model.Favourite", b =>
@@ -307,10 +329,27 @@ namespace WorkoutPlanner.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WorkoutPlanner.Model.WeekPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WeekPlans");
+                });
+
             modelBuilder.Entity("WorkoutPlanner.Model.Workout", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DayPlanId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ExerciseInfo")
@@ -340,6 +379,8 @@ namespace WorkoutPlanner.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DayPlanId");
 
                     b.HasIndex("UserId");
 
@@ -419,6 +460,17 @@ namespace WorkoutPlanner.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WorkoutPlanner.Model.DayPlan", b =>
+                {
+                    b.HasOne("WorkoutPlanner.Model.WeekPlan", "WeekPlan")
+                        .WithMany("Days")
+                        .HasForeignKey("WeekPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WeekPlan");
+                });
+
             modelBuilder.Entity("WorkoutPlanner.Model.Favourite", b =>
                 {
                     b.HasOne("WorkoutPlanner.Model.User", "User")
@@ -447,9 +499,16 @@ namespace WorkoutPlanner.Migrations
 
             modelBuilder.Entity("WorkoutPlanner.Model.Workout", b =>
                 {
+                    b.HasOne("WorkoutPlanner.Model.DayPlan", "DayPlan")
+                        .WithMany("Workouts")
+                        .HasForeignKey("DayPlanId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("WorkoutPlanner.Model.User", "User")
                         .WithMany("Workouts")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("DayPlan");
 
                     b.Navigation("User");
                 });
@@ -473,6 +532,11 @@ namespace WorkoutPlanner.Migrations
                     b.Navigation("Workout");
                 });
 
+            modelBuilder.Entity("WorkoutPlanner.Model.DayPlan", b =>
+                {
+                    b.Navigation("Workouts");
+                });
+
             modelBuilder.Entity("WorkoutPlanner.Model.PersonalTrainer", b =>
                 {
                     b.Navigation("Users");
@@ -485,6 +549,11 @@ namespace WorkoutPlanner.Migrations
                     b.Navigation("WorkoutLogs");
 
                     b.Navigation("Workouts");
+                });
+
+            modelBuilder.Entity("WorkoutPlanner.Model.WeekPlan", b =>
+                {
+                    b.Navigation("Days");
                 });
 #pragma warning restore 612, 618
         }

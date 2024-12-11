@@ -16,5 +16,9 @@
         public string? UserId { get; set; } 
         public User? User { get; set; } // For navigation
 
+        // Foreign key to DayPlan
+        public int? DayPlanId { get; set; } // Nullable to support shared workouts
+        public DayPlan DayPlan { get; set; } // Navigation property
+
     }
 }

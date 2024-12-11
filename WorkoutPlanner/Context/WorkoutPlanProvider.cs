@@ -45,19 +45,10 @@ namespace WorkoutPlanner.Context
             var days = Enumerable.Range(1, 7).OrderBy(_ => Guid.NewGuid()).Take(daysAvailable).ToList();
             return days;
         }
+
+
     }
 
-    public class WeekPlan
-    {
-        public int WeekNumber { get; set; }
-        public List<DayPlan> Days { get; set; }
-    }
-
-    public class DayPlan
-    {
-        public int DayNumber { get; set; }
-        public bool IsRestDay { get; set; }
-        public List<Workout> Workouts { get; set; }
-    }
+   
 
 }

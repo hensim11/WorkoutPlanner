@@ -53,6 +53,19 @@ namespace WorkoutPlanner.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WeekPlans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    WeekNumber = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeekPlans", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -112,6 +125,27 @@ namespace WorkoutPlanner.Migrations
                         column: x => x.PersonalTrainersId,
                         principalTable: "PersonalTrainers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DayPlans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    DayNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsRestDay = table.Column<bool>(type: "INTEGER", nullable: false),
+                    WeekPlanId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DayPlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DayPlans_WeekPlans_WeekPlanId",
+                        column: x => x.WeekPlanId,
+                        principalTable: "WeekPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -212,7 +246,8 @@ namespace WorkoutPlanner.Migrations
                     ExerciseName = table.Column<string>(type: "TEXT", nullable: false),
                     ExerciseInfo = table.Column<string>(type: "TEXT", nullable: false),
                     ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    DayPlanId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -222,6 +257,12 @@ namespace WorkoutPlanner.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Workouts_DayPlans_DayPlanId",
+                        column: x => x.DayPlanId,
+                        principalTable: "DayPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -318,6 +359,11 @@ namespace WorkoutPlanner.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_DayPlans_WeekPlanId",
+                table: "DayPlans",
+                column: "WeekPlanId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Favourites_UserId",
                 table: "Favourites",
                 column: "UserId");
@@ -336,6 +382,11 @@ namespace WorkoutPlanner.Migrations
                 name: "IX_WorkoutLogs_WorkoutId",
                 table: "WorkoutLogs",
                 column: "WorkoutId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Workouts_DayPlanId",
+                table: "Workouts",
+                column: "DayPlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_UserId",
@@ -380,7 +431,13 @@ namespace WorkoutPlanner.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "DayPlans");
+
+            migrationBuilder.DropTable(
                 name: "PersonalTrainers");
+
+            migrationBuilder.DropTable(
+                name: "WeekPlans");
         }
     }
 }

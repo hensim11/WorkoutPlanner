@@ -1,9 +1,11 @@
 ﻿@page "/"
 
+
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using WorkoutPlanner.Context
 @using WorkoutPlanner.Model
 @using Microsoft.EntityFrameworkCore
@@ -34,59 +36,61 @@
     </AuthorizeView>
 </div>
 
-<main class="container">
-    <div class="p-4 rounded" style="background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-        @Body
-    </div>
-    <h3>Your Plan</h3>
+<h3>Your Workout Plan</h3>
 
-    @if (isLoading)
-    {
-        <p>Loading your plan...</p>
-    }
-    else if (weekPlans != null)
-    {
-        <table class="table">
-            <thead>
+@if (isLoading)
+{
+    <p>Loading your workout plan...</p>
+}
+else if (weekPlans != null && weekPlans.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Week</th>
+                @foreach (var day in Enumerable.Range(1, 7))
+                {
+                    <th>Day @day</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var week in weekPlans)
+            {
                 <tr>
-                    @for (int week = 1; week <= 4; week++)
+                    <td>Week @week.WeekNumber</td>
+                    @foreach (var day in week.Days)
                     {
-                        <th>Week @week</th>
+                        <td>
+                            @if (day.IsRestDay)
+                            {
+                                <span>Rest</span>
+                            }
+                            else
+                            {
+                                
+                            }
+                        </td>
                     }
                 </tr>
-            </thead>
-            <tbody>
-                @for (int day = 1; day <= 7; day++)
-                {
-                    <tr>
-                        @foreach (var week in weekPlans)
-                        {
-                            <td>
-                                @if (week.Days.First(d => d.DayNumber == day).IsRestDay)
-                                {
-                                    <span>Rest</span>
-                                }
-                                else
-                                {
-                                    <a href="/plan?week=@week.WeekNumber&day=@day">View Workout</a>
-                                }
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No plan available.</p>
-    }
-</main>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No workout plan available.</p>
+}
 
-@code{
-
+@code {
     private List<WeekPlan> weekPlans;
+    private List<DayPlan> dayPlans;
+    private int day;
     private bool isLoading = true;
+
+    [Parameter] public int Week { get; set; }
+    [Parameter] public int Day { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +102,7 @@
             if (!string.IsNullOrEmpty(username))
             {
                 var user = await UserManager.FindByNameAsync(username);
+
                 if (user != null)
                 {
                     weekPlans = await WorkoutPlanProvider.GenerateWorkoutPlanAsync(user.Id, user.DaysAvailable);
