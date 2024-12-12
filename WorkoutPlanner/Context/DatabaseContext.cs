@@ -33,16 +33,22 @@ namespace WorkoutPlanner.Context
                 .HasForeignKey(w => w.UserId);
 
             modelBuilder.Entity<WeekPlan>()
-            .HasMany(wp => wp.Days)
-            .WithOne(dp => dp.WeekPlan)
-            .HasForeignKey(dp => dp.WeekPlanId)
-            .OnDelete(DeleteBehavior.Cascade); // Ensure cascading deletes
+            .HasOne(wp => wp.User)
+            .WithMany()
+            .HasForeignKey(wp => wp.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WeekPlan>()
+                .HasMany(wp => wp.Days)
+                .WithOne(dp => dp.WeekPlan)
+                .HasForeignKey(dp => dp.WeekPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DayPlan>()
                 .HasMany(dp => dp.Workouts)
                 .WithOne(w => w.DayPlan)
                 .HasForeignKey(w => w.DayPlanId)
-                .OnDelete(DeleteBehavior.Cascade); // Ensure cascading deletes
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionbuilder)

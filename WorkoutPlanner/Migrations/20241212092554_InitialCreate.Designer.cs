@@ -11,7 +11,7 @@ using WorkoutPlanner.Context;
 namespace WorkoutPlanner.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241211214117_InitialCreate")]
+    [Migration("20241212092554_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -335,10 +335,16 @@ namespace WorkoutPlanner.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("WeekNumber")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("WeekPlans");
                 });
@@ -495,6 +501,17 @@ namespace WorkoutPlanner.Migrations
                         .HasForeignKey("PersonalTrainersId");
 
                     b.Navigation("PersonalTrainers");
+                });
+
+            modelBuilder.Entity("WorkoutPlanner.Model.WeekPlan", b =>
+                {
+                    b.HasOne("WorkoutPlanner.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WorkoutPlanner.Model.Workout", b =>

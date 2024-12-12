@@ -1,5 +1,4 @@
-﻿@page "/plan"
-
+﻿@page "/plan/{week:int}/{day:int}"
 
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
@@ -11,15 +10,18 @@
 @attribute [Authorize]
 @inject UserManager<User> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject WorkoutProvider WorkoutProvider
-@inject UserProvider UserProvider
 @inject WorkoutPlanProvider WorkoutPlanProvider
+@inject DatabaseContext _context
 
-<h3>Workout for @Week, Day @Day</h3>
+<h3>Workout for Week @Week, Day @Day</h3>
 
 @if (isLoading)
 {
     <p>Loading workouts...</p>
+}
+else if (isRestDay)
+{
+    <p>This is a rest day. Take it easy!</p>
 }
 else if (workouts != null && workouts.Any())
 {
@@ -53,9 +55,9 @@ else
 }
 
 @code {
-    private List<Workout> workouts;
-    private string dayName;
+    private List<Workout> workouts = new();
     private bool isLoading = true;
+    private bool isRestDay = false;
 
     [Parameter] public int Week { get; set; }
     [Parameter] public int Day { get; set; }
@@ -78,7 +80,12 @@ else
                 throw new InvalidOperationException("User not found.");
             }
 
-            var weekPlans = await WorkoutPlanProvider.GenerateWorkoutPlanAsync(user.Id, user.DaysAvailable);
+            // Fetch persisted workout plan
+            var weekPlans = await _context.WeekPlans
+                .Include(wp => wp.Days)
+                .ThenInclude(dp => dp.Workouts)
+                .Where(wp => wp.UserId == user.Id)
+                .ToListAsync();
 
             var weekPlan = weekPlans.FirstOrDefault(w => w.WeekNumber == Week);
             if (weekPlan == null)
@@ -94,19 +101,24 @@ else
 
             if (planForDay.IsRestDay)
             {
-                throw new InvalidOperationException($"Day {Day} in week {Week} is a rest day.");
+                isRestDay = true;
+                workouts = new List<Workout>();
             }
-
-            workouts = planForDay.Workouts;
-            dayName = $"Week {Week}, Day {Day}";
+            else
+            {
+                isRestDay = false;
+                workouts = planForDay.Workouts;
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            workouts = new List<Workout>();
         }
         finally
         {
             isLoading = false;
         }
     }
+}
 }

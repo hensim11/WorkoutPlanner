@@ -46,7 +46,7 @@ namespace WorkoutPlanner.Context
 
             if (!_context.WeekPlans.Any())
             {
-                var users = await _context.Users.ToListAsync();
+                var users = await _context.Users.ToListAsync(); // Fetch all users
                 var weekPlans = new List<WeekPlan>();
 
                 foreach (var user in users)
@@ -59,21 +59,33 @@ namespace WorkoutPlanner.Context
                             Days = new List<DayPlan>()
                         };
 
-                        // Use user's DaysAvailable to generate workout days
+                        // Use the user's DaysAvailable to generate workout days
                         var workoutDays = GenerateWorkoutDays(user.DaysAvailable);
                         var allWorkouts = await _context.Workouts.ToListAsync();
                         var random = new Random();
 
                         for (int dayNumber = 1; dayNumber <= 7; dayNumber++)
                         {
-                            weekPlan.Days.Add(new DayPlan
+                            if (workoutDays.Contains(dayNumber))
                             {
-                                DayNumber = dayNumber,
-                                IsRestDay = !workoutDays.Contains(dayNumber),
-                                Workouts = workoutDays.Contains(dayNumber)
-                                    ? allWorkouts.OrderBy(_ => random.Next()).Take(5).ToList()
-                                    : new List<Workout>()
-                            });
+                                // Create a DayPlan with 5 random workouts
+                                weekPlan.Days.Add(new DayPlan
+                                {
+                                    DayNumber = dayNumber,
+                                    IsRestDay = false,
+                                    Workouts = allWorkouts.OrderBy(_ => random.Next()).Take(5).ToList()
+                                });
+                            }
+                            else
+                            {
+                                // Create a rest DayPlan
+                                weekPlan.Days.Add(new DayPlan
+                                {
+                                    DayNumber = dayNumber,
+                                    IsRestDay = true,
+                                    Workouts = new List<Workout>()
+                                });
+                            }
                         }
 
                         weekPlans.Add(weekPlan);
