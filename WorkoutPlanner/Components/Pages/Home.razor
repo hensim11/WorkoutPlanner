@@ -1,6 +1,5 @@
 ﻿@page "/"
 
-
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -17,91 +16,105 @@
 @inject WorkoutPlanProvider WorkoutPlanProvider
 @inject DatabaseContext _context
 
-
 <PageTitle>Home</PageTitle>
 
-
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f0f4f8;">
+<div class="container" style="min-height: 80vh; background-color: #eef2f6; padding: 2rem; border-radius: 8px;">
     <AuthorizeView>
         <NotAuthorized>
-            <div class="text-center">
-                <h2 class="mb-4" style="color: #333;">Welcome to Your Workout Planner</h2>
-                <p class="mb-4" style="color: #555;">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
+            <!-- Main welcome section -->
+            <div class="text-center" style="color: #2b4d66;">
+                <h2 class="mb-4">Welcome to Your Workout Planner</h2>
+                <p class="mb-4">Log in or create an account to have your very own workout plan created and reach your fitness goals!</p>
                 <div class="d-grid gap-2 d-md-block">
-                    <NavLink class="btn btn-outline-primary" href="/Account/Login" Match="NavLinkMatch.Prefix">Login</NavLink>
-                    <NavLink class="btn btn-outline-success" href="/Account/Register" Match="NavLinkMatch.Prefix">Register</NavLink>
-                   
+                    <NavLink class="btn btn-outline-primary" style="color: #2b4d66; border-color: #2b4d66;" href="/Account/Login" Match="NavLinkMatch.Prefix">Login</NavLink>
+                    <NavLink class="btn btn-outline-success" style="color: #2b4d66; border-color: #2b4d66;" href="/Account/Register" Match="NavLinkMatch.Prefix">Register</NavLink>
                 </div>
             </div>
         </NotAuthorized>
+        <Authorized>
+
+            <!-- Main workout plan section -->
+            <div class="text-center" style="color: #2b4d66;">
+                <h2 class="mb-4">Your Workout Plan</h2>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="text-center">
+                    <p style="color: #6b8ba4;">Loading your workout plan...</p>
+                </div>
+            }
+            else if (weekPlans != null && weekPlans.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" style="border-color: #b3c8dc;">
+                        <thead style="background-color: #b3c8dc; color: #2b4d66;">
+                            <tr>
+                                <th>Day</th>
+                                @foreach (var week in weekPlans)
+                                {
+                                    <th>Week @week.WeekNumber</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dayNumber in Enumerable.Range(1, 7))
+                            {
+                                <tr>
+                                    <td style="font-weight: bold;">Day @dayNumber</td>
+                                    @foreach (var week in weekPlans)
+                                    {
+                                        <td style="text-align: center;">
+                                            @if (week.Days.Any(day => day.DayNumber == dayNumber && day.IsRestDay))
+                                            {
+                                                <span style="color: #6b8ba4; font-style: italic;">Rest</span>
+                                            }
+                                            else if (week.Days.Any(day => day.DayNumber == dayNumber))
+                                            {
+                                                <NavLink href=@($"/plan/{week.WeekNumber}/{dayNumber}") style="color: #2b4d66; text-decoration: underline;">View Workout</NavLink>
+                                            }
+                                            else
+                                            {
+                                                <span style="color: #6b8ba4;">N/A</span>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center">
+                    <p style="color: #6b8ba4;">No workout plan available. Create your plan to get started!</p>
+                </div>
+            }
+        </Authorized>
     </AuthorizeView>
 </div>
 
-<h3>Your  Plan</h3>
-
-@if (isLoading)
-{
-    <p>Loading your workout plan...</p>
-}
-else if (weekPlans != null && weekPlans.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Week</th>
-                @foreach (var day in Enumerable.Range(1, 7))
-                {
-                    <th>Day @day</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var week in weekPlans)
-            {
-                <tr>
-                    <td>Week @week.WeekNumber</td>
-                    @foreach (var day in week.Days)
-                    {
-                        <td>
-                            @if (day.IsRestDay)
-                            {
-                                <span>Rest</span>
-                            }
-                            else
-                            {
-                                <NavLink href=@($"/plan/{week.WeekNumber}/{day.DayNumber}")>View Workout</NavLink>
-                            }
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No workout plan available.</p>
-}
-
 @code {
-    private List<WeekPlan> weekPlans;
-    private List<DayPlan> dayPlans;
-    private int day;
-    private bool isLoading = true;
+    private List<WeekPlan> weekPlans; // List to store weekly workout plans
+    private List<DayPlan> dayPlans; // List to store daily workout plans
+    private int day; // Current day number
+    private bool isLoading = true; // Indicates if the data is loading
 
-    [Parameter] public int Week { get; set; }
-    [Parameter] public int Day { get; set; }
-
+    [Parameter] public int Week { get; set; } // Current week parameter
+    [Parameter] public int Day { get; set; } // Current day parameter
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // Fetch the authentication state of the user
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var username = authState?.User?.Identity?.Name;
 
             if (!string.IsNullOrEmpty(username))
             {
+                // Retrieve user information and fetch workout plans
                 var user = await UserManager.FindByNameAsync(username);
 
                 if (user != null)
@@ -112,24 +125,8 @@ else
         }
         finally
         {
+            // Set loading to false after fetching data
             isLoading = false;
         }
     }
-
-    private void GoToPlan()
-    {
-        NavigationManager.NavigateTo("/plan");
-    }
-
-    private void GoToLogin()
-    {
-        NavigationManager.NavigateTo("/Account/Login");
-    }
-
-    private void GoToRegister()
-    {
-        NavigationManager.NavigateTo("Account/Register");
-    }
 }
-
-

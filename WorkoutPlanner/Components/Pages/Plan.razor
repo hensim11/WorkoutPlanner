@@ -10,10 +10,11 @@
 @attribute [Authorize]
 @inject UserManager<User> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject WorkoutPlanProvider WorkoutPlanProvider
 @inject DatabaseContext _context
 
-<h3>Workout for Week @Week, Day @Day</h3>
+<div class="header-container">
+    <h3>Workout for Week @Week, Day @Day</h3>
+</div>
 
 @if (isLoading)
 {
@@ -25,42 +26,140 @@ else if (isRestDay)
 }
 else if (workouts != null && workouts.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Workout Name</th>
-                <th>Reps</th>
-                <th>Sets</th>
-                <th>Weight (kg)</th>
-                <th>Rest Time (secs)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var workout in workouts)
-            {
-                <tr>
-                    <td>@workout.ExerciseName</td>
-                    <td>@workout.Reps</td>
-                    <td>@workout.Sets</td>
-                    <td>@workout.Weight</td>
-                    <td>@workout.RestTime</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="workout-container">
+        @foreach (var workout in workouts)
+        {
+            <div class="workout-card">
+                <div>
+                    <strong>Exercise Name:</strong>
+                    @if (editingWorkout == workout && editingField == "ExerciseName")
+                    {
+                        <select value="@workout.ExerciseName" @onchange="(e) => OnExerciseNameChange(e, workout)">
+                            @foreach (var exercise in allExercises)
+                            {
+                                <option value="@exercise">@exercise</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <span @onclick='() => StartEditing(workout, "ExerciseName")'>@workout.ExerciseName</span>
+                    }
+                </div>
+                <div class="workout-details">
+                    <div>
+                        <strong>Sets:</strong>
+                        @if (editingWorkout == workout && editingField == "Sets")
+                        {
+                            <input type="number" @bind="workout.Sets" @onblur="() => SaveWorkoutAsync(workout)" />
+                        }
+                        else
+                        {
+                            <span @onclick='() => StartEditing(workout, "Sets")'>@workout.Sets</span>
+                        }
+                    </div>
+                    <div>
+                        <strong>Reps:</strong>
+                        @if (editingWorkout == workout && editingField == "Reps")
+                        {
+                            <input type="number" @bind="workout.Reps" @onblur="() => SaveWorkoutAsync(workout)" />
+                        }
+                        else
+                        {
+                            <span @onclick='() => StartEditing(workout, "Reps")'>@workout.Reps</span>
+                        }
+                    </div>
+                    <div>
+                        <strong>Weight:</strong>
+                        @if (editingWorkout == workout && editingField == "Weight")
+                        {
+                            <input type="number" @bind="workout.Weight" @onblur="() => SaveWorkoutAsync(workout)" />
+                        }
+                        else
+                        {
+                            <span @onclick='() => StartEditing(workout, "Weight")'>@workout.Weight kg</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
 else
 {
     <p>No workouts available for this day.</p>
 }
 
+<style>
+    .header-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .header-container h3 {
+            color: #4a5c77; /* Dark dusty blue */
+        }
+
+    .workout-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .workout-card {
+        background-color: #f0f4f8;
+        border: 1px solid #c5d1e0;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .workout-card h4 {
+            margin: 0 0 8px;
+            color: #4a5c77;
+            font-size: 16px;
+        }
+
+    .workout-details span {
+        cursor: pointer;
+        border-bottom: 1px dashed #4a5c77; /* Underline to indicate editability */
+    }
+
+        .workout-details span:hover {
+            color: #5b7c97; /* Highlight color */
+        }
+
+    .workout-details input,
+    .workout-details select {
+        width: 100px;
+        margin-left: 8px;
+    }
+</style>
+
 @code {
     private List<Workout> workouts = new();
+    private List<string> allExercises = new(); // Store exercise names here
     private bool isLoading = true;
     private bool isRestDay = false;
+    private Workout? editingWorkout = null;
+    private string? editingField = null;
 
     [Parameter] public int Week { get; set; }
     [Parameter] public int Day { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all available exercises
+        allExercises = await _context.Workouts
+            .Select(w => w.ExerciseName)
+            .Distinct()
+            .ToListAsync();
+
+        await base.OnInitializedAsync();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -80,7 +179,6 @@ else
                 throw new InvalidOperationException("User not found.");
             }
 
-            // Fetch persisted workout plan
             var weekPlans = await _context.WeekPlans
                 .Include(wp => wp.Days)
                 .ThenInclude(dp => dp.Workouts)
@@ -120,5 +218,36 @@ else
             isLoading = false;
         }
     }
-}
+
+    private void StartEditing(Workout workout, string field)
+    {
+        editingWorkout = workout;
+        editingField = field;
+    }
+
+    private async Task SaveWorkoutAsync(Workout workout)
+    {
+        try
+        {
+            // Save changes to the database
+            var workoutProvider = new WorkoutProvider(_context);
+            await workoutProvider.UpdateWorkoutAsync(workout);
+
+            // Clear editing state
+            editingWorkout = null;
+            editingField = null;
+
+            Console.WriteLine($"Workout updated: {workout.ExerciseName}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving workout: {ex.Message}");
+        }
+    }
+
+    private async Task OnExerciseNameChange(ChangeEventArgs e, Workout workout)
+    {
+        workout.ExerciseName = e.Value?.ToString();
+        await SaveWorkoutAsync(workout);
+    }
 }

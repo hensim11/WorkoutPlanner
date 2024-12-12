@@ -44,6 +44,21 @@ namespace WorkoutPlanner.Context
             await _context.Workouts.AddRangeAsync(randomWorkouts);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateWorkoutAsync(Workout updatedWorkout)
+        {
+            var existingWorkout = await _context.Workouts.FindAsync(updatedWorkout.Id);
+
+            if (existingWorkout != null)
+            {
+                existingWorkout.ExerciseName = updatedWorkout.ExerciseName;
+                existingWorkout.Reps = updatedWorkout.Reps;
+                existingWorkout.Sets = updatedWorkout.Sets;
+                existingWorkout.Weight = updatedWorkout.Weight;
+
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 
 }
