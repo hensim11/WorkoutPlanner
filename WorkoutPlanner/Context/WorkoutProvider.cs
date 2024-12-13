@@ -47,17 +47,22 @@ namespace WorkoutPlanner.Context
 
         public async Task UpdateWorkoutAsync(Workout updatedWorkout)
         {
+            // Retrieve the existing workout record from the database by its ID.
             var existingWorkout = await _context.Workouts.FindAsync(updatedWorkout.Id);
 
+            // Check if the workout exists in the database.
             if (existingWorkout != null)
             {
+                // Update the existing workout properties with the new values.
                 existingWorkout.ExerciseName = updatedWorkout.ExerciseName;
                 existingWorkout.Reps = updatedWorkout.Reps;
                 existingWorkout.Sets = updatedWorkout.Sets;
                 existingWorkout.Weight = updatedWorkout.Weight;
 
+                // Save changes to the database.
                 await _context.SaveChangesAsync();
             }
+            
         }
     }
 

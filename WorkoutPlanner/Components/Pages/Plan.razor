@@ -13,28 +13,34 @@
 @inject DatabaseContext _context
 
 <div class="header-container">
+    <!-- Display the header with the current week and day -->
     <h3>Workout for Week @Week, Day @Day</h3>
 </div>
 
 @if (isLoading)
 {
+    <!-- Show a loading message while data is being fetched -->
     <p>Loading workouts...</p>
 }
 else if (isRestDay)
 {
+    <!-- Show a rest day message if it's a designated rest day -->
     <p>This is a rest day. Take it easy!</p>
 }
 else if (workouts != null && workouts.Any())
 {
     <div class="workout-container">
+       
         @foreach (var workout in workouts)
         {
             <div class="workout-card">
                 <div>
+                    <!-- Display or allow editing of the exercise name -->
                     <strong>Exercise Name:</strong>
                     @if (editingWorkout == workout && editingField == "ExerciseName")
                     {
                         <select value="@workout.ExerciseName" @onchange="(e) => OnExerciseNameChange(e, workout)">
+                            <!-- Populate the dropdown with available exercises -->
                             @foreach (var exercise in allExercises)
                             {
                                 <option value="@exercise">@exercise</option>
@@ -47,6 +53,7 @@ else if (workouts != null && workouts.Any())
                     }
                 </div>
                 <div class="workout-details">
+                    <!-- Display or allow editing of sets -->
                     <div>
                         <strong>Sets:</strong>
                         @if (editingWorkout == workout && editingField == "Sets")
@@ -58,6 +65,7 @@ else if (workouts != null && workouts.Any())
                             <span @onclick='() => StartEditing(workout, "Sets")'>@workout.Sets</span>
                         }
                     </div>
+                    <!-- Display or allow editing of reps -->
                     <div>
                         <strong>Reps:</strong>
                         @if (editingWorkout == workout && editingField == "Reps")
@@ -69,6 +77,7 @@ else if (workouts != null && workouts.Any())
                             <span @onclick='() => StartEditing(workout, "Reps")'>@workout.Reps</span>
                         }
                     </div>
+                    <!-- Display or allow editing of weight -->
                     <div>
                         <strong>Weight:</strong>
                         @if (editingWorkout == workout && editingField == "Weight")
@@ -87,10 +96,12 @@ else if (workouts != null && workouts.Any())
 }
 else
 {
+    <!-- Display a message if no workouts are available -->
     <p>No workouts available for this day.</p>
 }
 
 <style>
+    /* CSS styles for the page layout and components */
     .header-container {
         display: flex;
         justify-content: center;
@@ -117,12 +128,6 @@ else
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-        .workout-card h4 {
-            margin: 0 0 8px;
-            color: #4a5c77;
-            font-size: 16px;
-        }
-
     .workout-details span {
         cursor: pointer;
         border-bottom: 1px dashed #4a5c77; /* Underline to indicate editability */
@@ -142,17 +147,17 @@ else
 @code {
     private List<Workout> workouts = new();
     private List<string> allExercises = new(); // Store exercise names here
-    private bool isLoading = true;
-    private bool isRestDay = false;
-    private Workout? editingWorkout = null;
-    private string? editingField = null;
+    private bool isLoading = true; // Indicates whether data is being loaded
+    private bool isRestDay = false; // Indicates whether the current day is a rest day
+    private Workout? editingWorkout = null; // The workout currently being edited
+    private string? editingField = null; // The field currently being edited
 
-    [Parameter] public int Week { get; set; }
-    [Parameter] public int Day { get; set; }
+    [Parameter] public int Week { get; set; } // The week parameter from the URL
+    [Parameter] public int Day { get; set; } // The day parameter from the URL
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetch all available exercises
+        // Fetch all available exercises from the database
         allExercises = await _context.Workouts
             .Select(w => w.ExerciseName)
             .Distinct()
@@ -165,6 +170,7 @@ else
     {
         try
         {
+            // Get the current user's authentication state
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var username = authState?.User?.Identity?.Name;
 
@@ -173,30 +179,35 @@ else
                 throw new InvalidOperationException("User not logged in.");
             }
 
+            // Retrieve the current user
             var user = await UserManager.FindByNameAsync(username);
             if (user == null)
             {
                 throw new InvalidOperationException("User not found.");
             }
 
+            // Fetch the user's workout plans
             var weekPlans = await _context.WeekPlans
                 .Include(wp => wp.Days)
                 .ThenInclude(dp => dp.Workouts)
                 .Where(wp => wp.UserId == user.Id)
                 .ToListAsync();
 
+            // Find the plan for the specified week
             var weekPlan = weekPlans.FirstOrDefault(w => w.WeekNumber == Week);
             if (weekPlan == null)
             {
                 throw new InvalidOperationException($"No plan found for week {Week}.");
             }
 
+            // Find the plan for the specified day
             var planForDay = weekPlan.Days.FirstOrDefault(d => d.DayNumber == Day);
             if (planForDay == null)
             {
                 throw new InvalidOperationException($"No plan found for day {Day} in week {Week}.");
             }
 
+            // Check if it's a rest day
             if (planForDay.IsRestDay)
             {
                 isRestDay = true;
@@ -215,12 +226,13 @@ else
         }
         finally
         {
-            isLoading = false;
+            isLoading = false; // Data loading is complete
         }
     }
 
     private void StartEditing(Workout workout, string field)
     {
+        // Begin editing the specified field of a workout
         editingWorkout = workout;
         editingField = field;
     }
@@ -229,11 +241,11 @@ else
     {
         try
         {
-            // Save changes to the database
+            // Save the updated workout to the database
             var workoutProvider = new WorkoutProvider(_context);
             await workoutProvider.UpdateWorkoutAsync(workout);
 
-            // Clear editing state
+            // Clear the editing state
             editingWorkout = null;
             editingField = null;
 
@@ -247,6 +259,7 @@ else
 
     private async Task OnExerciseNameChange(ChangeEventArgs e, Workout workout)
     {
+        // Handle changes to the exercise name dropdown
         workout.ExerciseName = e.Value?.ToString();
         await SaveWorkoutAsync(workout);
     }
