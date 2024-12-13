@@ -304,7 +304,9 @@ namespace WorkoutPlanner.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     WorkoutId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

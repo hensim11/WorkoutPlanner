@@ -396,6 +396,12 @@ namespace WorkoutPlanner.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("CompletionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");

@@ -11,7 +11,7 @@ using WorkoutPlanner.Context;
 namespace WorkoutPlanner.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241212092554_InitialCreate")]
+    [Migration("20241213152112_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -397,6 +397,12 @@ namespace WorkoutPlanner.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CompletionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCompleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
