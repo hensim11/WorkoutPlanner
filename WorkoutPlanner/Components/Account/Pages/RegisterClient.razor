@@ -213,7 +213,7 @@
         await WorkoutProvider.AssignRandomWorkoutsToUserAsync(userId, workoutCount);
 
         await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo("/plan");
+        RedirectManager.RedirectTo("/");
 
     }
 
