@@ -1,7 +1,242 @@
 ﻿@page "/progress"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using WorkoutPlanner.Context
+@using WorkoutPlanner.Model
+@attribute [Authorize]
 
-<h3>Progress</h3>
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<User> UserManager
+@inject DatabaseContext _context
+
+<div class="progress-container">
+    <h1>Progress Tracker</h1>
+
+    @foreach (var week in weeksProgress)
+    {
+        <div class="week-card">
+            <button class="week-toggle" @onclick="() => ToggleWeekDetails(week)">
+                Week @week.WeekNumber @(week.ShowDetails ? "▲" : "▼")
+            </button>
+            @if (week.ShowDetails)
+            {
+                <div class="day-grid">
+                    @foreach (var day in week.Days)
+                    {
+                        <div class="day-card">
+                            <h3>Day @day.DayNumber</h3>
+                            <p>@day.CompletedCount / @day.TotalExercises Completed</p>
+                            @if (day.CompletedWorkouts.Any())
+                            {
+                                <ul>
+                                    @foreach (var workout in day.CompletedWorkouts)
+                                    {
+                                        <li>@workout.Workout.ExerciseName</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>No exercises completed for this day.</p>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Favourites Table -->
+    @if (favouriteWorkouts.Any())
+    {
+        <h2 class="favourites-header">Favourites</h2>
+        <table class="favourites-table">
+            <thead>
+                <tr>
+                    <th>Exercise Name</th>
+                    <th>Sets</th>
+                    <th>Reps</th>
+                    <th>Weight (kg)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var workout in favouriteWorkouts)
+                {
+                    <tr>
+                        <td>@workout.ExerciseName</td>
+                        <td>@workout.Sets</td>
+                        <td>@workout.Reps</td>
+                        <td>@workout.Weight</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No favourite workouts added yet.</p>
+    }
+</div>
+
+<style>
+    .progress-container {
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        color: #4a5c77;
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #3a4f67;
+        margin-bottom: 20px;
+    }
+
+    .week-card {
+        background-color: #e7edf3;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .week-toggle {
+        width: 100%;
+        background-color: #4a5c77;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 8px 8px 0 0;
+        text-align: left;
+    }
+
+    .day-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .day-card {
+        background-color: #f7f9fc;
+        border: 1px solid #c5d1e0;
+        border-radius: 6px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .favourites-header {
+        margin-top: 30px;
+        font-size: 1.5rem;
+        color: #4a5c77;
+    }
+
+    .favourites-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .favourites-table th, .favourites-table td {
+            border: 1px solid #c5d1e0;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .favourites-table th {
+            background-color: #4a5c77;
+            color: white;
+        }
+
+        .favourites-table td {
+            background-color: #f7f9fc;
+        }
+</style>
 
 @code {
+    private List<WeekProgress> weeksProgress = new();
+    private List<Workout> favouriteWorkouts = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserProgressAsync();
+        await LoadFavouriteWorkoutsAsync();
+    }
+
+    private async Task LoadUserProgressAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+        var user = await UserManager.FindByNameAsync(username);
+
+        if (user == null)
+            throw new InvalidOperationException("User not found.");
+
+        var weekPlans = await _context.WeekPlans
+            .Where(wp => wp.UserId == user.Id)
+            .Include(wp => wp.Days)
+                .ThenInclude(dp => dp.Workouts)
+            .ToListAsync();
+
+        var completedWorkouts = await _context.WorkoutLogs
+            .Where(log => log.UserId == user.Id && log.IsCompleted)
+            .Include(log => log.Workout)
+            .ToListAsync();
+
+        weeksProgress = weekPlans.Select(wp => new WeekProgress
+            {
+                WeekNumber = wp.WeekNumber,
+                ShowDetails = false,
+                Days = wp.Days.Select(dp => new DayProgress
+                {
+                    DayNumber = dp.DayNumber,
+                    TotalExercises = dp.Workouts.Count,
+                    CompletedWorkouts = completedWorkouts
+                        .Where(log => dp.Workouts.Any(w => w.Id == log.WorkoutId))
+                        .ToList(),
+                    CompletedCount = completedWorkouts.Count(log => dp.Workouts.Any(w => w.Id == log.WorkoutId))
+                }).ToList()
+            }).ToList();
+    }
+
+    private async Task LoadFavouriteWorkoutsAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+        var user = await UserManager.FindByNameAsync(username);
+
+        if (user != null)
+        {
+            favouriteWorkouts = await _context.Favourites
+                .Where(fav => fav.User.Id == user.Id)
+                .Include(fav => fav.Workout)
+                .Select(fav => fav.Workout)
+                .ToListAsync();
+        }
+    }
+
+    private void ToggleWeekDetails(WeekProgress week)
+    {
+        week.ShowDetails = !week.ShowDetails;
+    }
+
+    private class WeekProgress
+    {
+        public int WeekNumber { get; set; }
+        public bool ShowDetails { get; set; }
+        public List<DayProgress> Days { get; set; }
+    }
+
+    private class DayProgress
+    {
+        public int DayNumber { get; set; }
+        public int TotalExercises { get; set; }
+        public int CompletedCount { get; set; }
+        public List<WorkoutLog> CompletedWorkouts { get; set; }
+    }
 }

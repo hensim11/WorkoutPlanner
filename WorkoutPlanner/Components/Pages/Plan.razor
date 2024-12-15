@@ -30,17 +30,15 @@ else if (isRestDay)
 else if (workouts != null && workouts.Any())
 {
     <div class="workout-container">
-       
         @foreach (var workout in workouts)
         {
             <div class="workout-card">
                 <div>
                     <!-- Display or allow editing of the exercise name -->
-                    <strong>Exercise Name:</strong>
+                    <strong class="label">Exercise Name:</strong>
                     @if (editingWorkout == workout && editingField == "ExerciseName")
                     {
-                        <select value="@workout.ExerciseName" @onchange="(e) => OnExerciseNameChange(e, workout)">
-                            <!-- Populate the dropdown with available exercises -->
+                        <select class="dropdown" value="@workout.ExerciseName" @onchange="(e) => OnExerciseNameChange(e, workout)">
                             @foreach (var exercise in allExercises)
                             {
                                 <option value="@exercise">@exercise</option>
@@ -49,46 +47,65 @@ else if (workouts != null && workouts.Any())
                     }
                     else
                     {
-                        <span @onclick='() => StartEditing(workout, "ExerciseName")'>@workout.ExerciseName</span>
+                        <span class="editable" @onclick='() => StartEditing(workout, "ExerciseName")'>@workout.ExerciseName</span>
                     }
                 </div>
                 <div class="workout-details">
                     <!-- Display or allow editing of sets -->
                     <div>
-                        <strong>Sets:</strong>
+                        <strong class="label">Sets:</strong>
                         @if (editingWorkout == workout && editingField == "Sets")
                         {
-                            <input type="number" @bind="workout.Sets" @onblur="() => SaveWorkoutAsync(workout)" />
+                            <input class="input-field" type="number" @bind="workout.Sets" @onblur="() => SaveWorkoutAsync(workout)" />
                         }
                         else
                         {
-                            <span @onclick='() => StartEditing(workout, "Sets")'>@workout.Sets</span>
+                            <span class="editable" @onclick='() => StartEditing(workout, "Sets")'>@workout.Sets</span>
                         }
                     </div>
                     <!-- Display or allow editing of reps -->
                     <div>
-                        <strong>Reps:</strong>
+                        <strong class="label">Reps:</strong>
                         @if (editingWorkout == workout && editingField == "Reps")
                         {
-                            <input type="number" @bind="workout.Reps" @onblur="() => SaveWorkoutAsync(workout)" />
+                            <input class="input-field" type="number" @bind="workout.Reps" @onblur="() => SaveWorkoutAsync(workout)" />
                         }
                         else
                         {
-                            <span @onclick='() => StartEditing(workout, "Reps")'>@workout.Reps</span>
+                            <span class="editable" @onclick='() => StartEditing(workout, "Reps")'>@workout.Reps</span>
                         }
                     </div>
                     <!-- Display or allow editing of weight -->
                     <div>
-                        <strong>Weight:</strong>
+                        <strong class="label">Weight:</strong>
                         @if (editingWorkout == workout && editingField == "Weight")
                         {
-                            <input type="number" @bind="workout.Weight" @onblur="() => SaveWorkoutAsync(workout)" />
+                            <input class="input-field" type="number" @bind="workout.Weight" @onblur="() => SaveWorkoutAsync(workout)" />
                         }
                         else
                         {
-                            <span @onclick='() => StartEditing(workout, "Weight")'>@workout.Weight kg</span>
+                            <span class="editable" @onclick='() => StartEditing(workout, "Weight")'>@workout.Weight kg</span>
                         }
                     </div>
+                </div>
+                <div class="workout-actions">
+                    <!-- Mark as Completed -->
+                    <label>
+                        <input type="checkbox" checked="@IsWorkoutCompleted(workout.Id)"
+                               @onclick="() => ToggleCompletionAsync(workout.Id)" />
+                        Completed
+                    </label>
+                    <!-- Add to Favourites -->
+                    <button class="favorite-button" @onclick="() => ToggleFavouriteAsync(workout.Id)">
+                        @if (IsWorkoutFavourited(workout.Id))
+                        {
+                            <span>★ Remove from Favourites</span>
+                        }
+                        else
+                        {
+                            <span>☆ Add to Favourites</span>
+                        }
+                    </button>
                 </div>
             </div>
         }
@@ -101,76 +118,144 @@ else
 }
 
 <style>
-    /* CSS styles for the page layout and components */
     .header-container {
         display: flex;
         justify-content: center;
-        margin-bottom: 20px;
+        align-items: center;
+        text-align: center;
+        background-color: #e7edf3; /* Light dusty blue */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 600px;
     }
 
         .header-container h3 {
             color: #4a5c77; /* Dark dusty blue */
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
         }
 
     .workout-container {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        max-width: 500px;
+        gap: 20px;
+        max-width: 600px;
         margin: 0 auto;
     }
 
     .workout-card {
-        background-color: #f0f4f8;
+        background-color: #e7edf3;
         border: 1px solid #c5d1e0;
-        border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .workout-details span {
+    .label {
+        color: #4a5c77;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .editable {
+        color: #5b7c97;
         cursor: pointer;
-        border-bottom: 1px dashed #4a5c77; /* Underline to indicate editability */
+        border-bottom: 1px dashed #5b7c97;
     }
 
-        .workout-details span:hover {
-            color: #5b7c97; /* Highlight color */
+        .editable:hover {
+            color: #3a4f67;
         }
 
-    .workout-details input,
-    .workout-details select {
-        width: 100px;
-        margin-left: 8px;
+    .input-field {
+        border: 1px solid #c5d1e0;
+        border-radius: 5px;
+        padding: 4px 8px;
+        color: #4a5c77;
+        background-color: #f7f9fc;
     }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #5b7c97;
+        }
+
+    .dropdown {
+        border: 1px solid #c5d1e0;
+        border-radius: 5px;
+        padding: 4px 8px;
+        background-color: #f7f9fc;
+        color: #4a5c77;
+    }
+
+        .dropdown:focus {
+            outline: none;
+            border-color: #5b7c97;
+        }
+
+    .favorite-button {
+        background-color: transparent;
+        border: none;
+        color: #4a5c77;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+        .favorite-button:hover {
+            color: #5b7c97;
+        }
 </style>
 
 @code {
+    // List to hold all workouts for the current day
     private List<Workout> workouts = new();
-    private List<string> allExercises = new(); // Store exercise names here
-    private bool isLoading = true; // Indicates whether data is being loaded
-    private bool isRestDay = false; // Indicates whether the current day is a rest day
-    private Workout? editingWorkout = null; // The workout currently being edited
-    private string? editingField = null; // The field currently being edited
 
-    [Parameter] public int Week { get; set; } // The week parameter from the URL
-    [Parameter] public int Day { get; set; } // The day parameter from the URL
+    // List to store all available exercise names for dropdowns
+    private List<string> allExercises = new();
 
+    // Variables to handle inline editing of workouts
+    private Workout? editingWorkout = null; // The workout being edited
+    private string? editingField = null; // The specific field being edited
+
+    // List of workout IDs that the user has marked as completed
+    private List<int> completedWorkoutIds = new();
+
+    // List of workout IDs that the user has marked as favourites
+    private List<int> favouriteWorkoutIds = new();
+
+    // Flags to manage loading state and rest day status
+    private bool isLoading = true;
+    private bool isRestDay = false;
+
+    // Parameters for the current week and day, passed via the URL
+    [Parameter] public int Week { get; set; }
+    [Parameter] public int Day { get; set; }
+
+    // Runs when the component is initialized
     protected override async Task OnInitializedAsync()
     {
-        // Fetch all available exercises from the database
+        // Fetch all distinct exercise names for the dropdown
         allExercises = await _context.Workouts
             .Select(w => w.ExerciseName)
             .Distinct()
             .ToListAsync();
 
-        await base.OnInitializedAsync();
+        // Fetch the list of favourite workouts for the user
+        favouriteWorkoutIds = await GetFavouriteWorkoutIdsAsync();
+
+        await base.OnInitializedAsync(); // Call the base implementation
     }
 
+    // Runs whenever the parameters for the component are set or updated
     protected override async Task OnParametersSetAsync()
     {
         try
         {
-            // Get the current user's authentication state
+            // Get the currently authenticated user's state
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var username = authState?.User?.Identity?.Name;
 
@@ -179,14 +264,14 @@ else
                 throw new InvalidOperationException("User not logged in.");
             }
 
-            // Retrieve the current user
+            // Fetch the current user by username
             var user = await UserManager.FindByNameAsync(username);
             if (user == null)
             {
                 throw new InvalidOperationException("User not found.");
             }
 
-            // Fetch the user's workout plans
+            // Fetch the user's week plans from the database
             var weekPlans = await _context.WeekPlans
                 .Include(wp => wp.Days)
                 .ThenInclude(dp => dp.Workouts)
@@ -207,59 +292,180 @@ else
                 throw new InvalidOperationException($"No plan found for day {Day} in week {Week}.");
             }
 
-            // Check if it's a rest day
+            // Check if the current day is a rest day
             if (planForDay.IsRestDay)
             {
                 isRestDay = true;
-                workouts = new List<Workout>();
+                workouts = new List<Workout>(); // No workouts on a rest day
             }
             else
             {
                 isRestDay = false;
-                workouts = planForDay.Workouts;
+                workouts = planForDay.Workouts; // Load workouts for the day
             }
+
+            // Fetch the list of completed workouts for the user
+            completedWorkoutIds = await GetCompletedWorkoutIdsAsync();
         }
         catch (Exception ex)
         {
+            // Log any exceptions and clear the workouts list
             Console.WriteLine($"Error: {ex.Message}");
             workouts = new List<Workout>();
         }
         finally
         {
-            isLoading = false; // Data loading is complete
+            isLoading = false; // Mark loading as complete
         }
     }
 
+    // Fetch the list of workout IDs marked as completed by the user
+    private async Task<List<int>> GetCompletedWorkoutIdsAsync()
+    {
+        // Get the authenticated user's username
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+
+        // Fetch the user by username
+        var user = await UserManager.FindByNameAsync(username);
+
+        // Query the WorkoutLogs table for completed workouts
+        return await _context.WorkoutLogs
+            .Where(log => log.UserId == user.Id && log.IsCompleted)
+            .Select(log => log.WorkoutId)
+            .ToListAsync();
+    }
+
+    // Fetch the list of workout IDs marked as favourites by the user
+    private async Task<List<int>> GetFavouriteWorkoutIdsAsync()
+    {
+        // Get the authenticated user's username
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+
+        // Fetch the user by username
+        var user = await UserManager.FindByNameAsync(username);
+
+        // Query the Favourites table for the user's favourite workouts
+        return await _context.Favourites
+            .Where(f => f.UserId == user.Id)
+            .Select(f => f.WorkoutId)
+            .ToListAsync();
+    }
+
+    // Check if a specific workout is marked as completed
+    private bool IsWorkoutCompleted(int workoutId)
+    {
+        return completedWorkoutIds.Contains(workoutId);
+    }
+
+    // Toggle the completion status of a workout
+    private async Task ToggleCompletionAsync(int workoutId)
+    {
+        
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+
+        
+        var user = await UserManager.FindByNameAsync(username);
+
+        // Check if a log already exists for the workout
+        var log = await _context.WorkoutLogs.FirstOrDefaultAsync(l => l.WorkoutId == workoutId && l.UserId == user.Id);
+
+        if (log == null)
+        {
+            // Create a new log entry if it doesn't exist
+            log = new WorkoutLog
+                {
+                    WorkoutId = workoutId,
+                    UserId = user.Id,
+                    IsCompleted = true,
+                    CompletionDate = DateTime.UtcNow
+                };
+            _context.WorkoutLogs.Add(log);
+        }
+        else
+        {
+            // Toggle the completion status
+            log.IsCompleted = !log.IsCompleted;
+
+            // Update the completion date only if the workout is completed
+            log.CompletionDate = log.IsCompleted ? DateTime.UtcNow : default;
+        }
+
+        
+        await _context.SaveChangesAsync();
+
+        
+        completedWorkoutIds = await GetCompletedWorkoutIdsAsync();
+    }
+
+    // Check if a specific workout is marked as a favourite
+    private bool IsWorkoutFavourited(int workoutId)
+    {
+        return favouriteWorkoutIds.Contains(workoutId);
+    }
+
+    // Toggle the favourite status of a workout
+    private async Task ToggleFavouriteAsync(int workoutId)
+    {
+       
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User.Identity.Name;
+
+        
+        var user = await UserManager.FindByNameAsync(username);
+
+        // Check if a favourite record already exists for the workout
+        var favourite = await _context.Favourites.FirstOrDefaultAsync(f => f.WorkoutId == workoutId && f.UserId == user.Id);
+
+        if (favourite == null)
+        {
+            // Add to favourites if it doesn't exist
+            favourite = new Favourite
+                {
+                    WorkoutId = workoutId,
+                    UserId = user.Id
+                };
+            _context.Favourites.Add(favourite);
+        }
+        else
+        {
+            // Remove from favourites if it exists
+            _context.Favourites.Remove(favourite);
+        }
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        // Refresh the list of favourite workout IDs
+        favouriteWorkoutIds = await GetFavouriteWorkoutIdsAsync();
+    }
+
+    // Start editing a specific field of a workout
     private void StartEditing(Workout workout, string field)
     {
-        // Begin editing the specified field of a workout
         editingWorkout = workout;
         editingField = field;
     }
 
+    // Save changes to a workout
     private async Task SaveWorkoutAsync(Workout workout)
     {
-        try
-        {
-            // Save the updated workout to the database
-            var workoutProvider = new WorkoutProvider(_context);
-            await workoutProvider.UpdateWorkoutAsync(workout);
+        // Update the workout using the WorkoutProvider
+        var workoutProvider = new WorkoutProvider(_context);
+        await workoutProvider.UpdateWorkoutAsync(workout);
 
-            // Clear the editing state
-            editingWorkout = null;
-            editingField = null;
+        // Clear the editing state
+        editingWorkout = null;
+        editingField = null;
 
-            Console.WriteLine($"Workout updated: {workout.ExerciseName}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving workout: {ex.Message}");
-        }
+        Console.WriteLine($"Workout updated: {workout.ExerciseName}");
     }
 
+    // Handle changes to the exercise name dropdown
     private async Task OnExerciseNameChange(ChangeEventArgs e, Workout workout)
     {
-        // Handle changes to the exercise name dropdown
         workout.ExerciseName = e.Value?.ToString();
         await SaveWorkoutAsync(workout);
     }
